@@ -19,7 +19,7 @@ go.work
 
 # Build output
 taskvanguard
-vanguard
+/vanguard
 dist/
 
 # IDE files

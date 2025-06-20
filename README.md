@@ -91,9 +91,15 @@ Use `vanguard add <task>` just like `taskwarrior add <task>`. TaskVanguard creat
 ### 2. Install
 
 ```sh
+go install github.com/taskvanguard/taskvanguard/cmd/vanguard@latest
+```
+
+or
+
+```sh
 git clone https://github.com/taskvanguard/taskvanguard.git
 cd taskvanguard
-go build -o vanguard
+go build ./cmd/vanguard
 ```
 
 <!-- Or download the latest release from [Releases](https://github.com/taskvanguard/taskvanguard/releases). -->
