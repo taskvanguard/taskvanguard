@@ -15,7 +15,7 @@
     <img src="docs/images/logo.png" alt="Logo" width="200" height="200">
   </a>
 
-<h3 align="center">Task Vanguard</h3>
+<h3 align="center">Task Vanguard [BETA 0.2.1]</h3>
 
   <p align="center">
 Your tactical advisor at the frontlines of your goals - powered by AI using TaskWarrior.
