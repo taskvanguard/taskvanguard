@@ -7,9 +7,9 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
-	"xarc.dev/taskvanguard/internal/goals"
-	"xarc.dev/taskvanguard/internal/taskwarrior"
-	"xarc.dev/taskvanguard/pkg/theme"
+	"github.com/taskvanguard/taskvanguard/internal/goals"
+	"github.com/taskvanguard/taskvanguard/internal/taskwarrior"
+	"github.com/taskvanguard/taskvanguard/pkg/theme"
 )
 
 // getGoalsManager creates a goals manager with the current config

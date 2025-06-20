@@ -12,10 +12,10 @@ import (
 
 	"github.com/briandowns/spinner"
 	"github.com/spf13/cobra"
-	"xarc.dev/taskvanguard/internal/llm"
-	"xarc.dev/taskvanguard/internal/taskwarrior"
-	"xarc.dev/taskvanguard/pkg/theme"
-	"xarc.dev/taskvanguard/pkg/types"
+	"github.com/taskvanguard/taskvanguard/internal/llm"
+	"github.com/taskvanguard/taskvanguard/internal/taskwarrior"
+	"github.com/taskvanguard/taskvanguard/pkg/theme"
+	"github.com/taskvanguard/taskvanguard/pkg/types"
 )
 
 type SpotlightResult struct {

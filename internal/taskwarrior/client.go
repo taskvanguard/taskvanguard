@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"strings"
 
-	"xarc.dev/taskvanguard/pkg/filter"
-	"xarc.dev/taskvanguard/pkg/types"
+	"github.com/taskvanguard/taskvanguard/pkg/filter"
+	"github.com/taskvanguard/taskvanguard/pkg/types"
 )
 
 type Client struct{}

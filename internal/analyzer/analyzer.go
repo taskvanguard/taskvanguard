@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"strings"
 
-	"xarc.dev/taskvanguard/internal/llm"
-	"xarc.dev/taskvanguard/internal/prompts"
-	"xarc.dev/taskvanguard/pkg/filter"
-	"xarc.dev/taskvanguard/pkg/theme"
-	"xarc.dev/taskvanguard/pkg/types"
-	"xarc.dev/taskvanguard/pkg/utils"
+	"github.com/taskvanguard/taskvanguard/internal/llm"
+	"github.com/taskvanguard/taskvanguard/internal/prompts"
+	"github.com/taskvanguard/taskvanguard/pkg/filter"
+	"github.com/taskvanguard/taskvanguard/pkg/theme"
+	"github.com/taskvanguard/taskvanguard/pkg/types"
+	"github.com/taskvanguard/taskvanguard/pkg/utils"
 )
 
 // cleanMarkdownCodeFences removes markdown code fence markers from LLM responses

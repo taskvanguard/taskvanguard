@@ -11,10 +11,10 @@ import (
 
 	"github.com/briandowns/spinner"
 	"github.com/spf13/cobra"
-	"xarc.dev/taskvanguard/internal/analyzer"
-	"xarc.dev/taskvanguard/internal/taskwarrior"
-	"xarc.dev/taskvanguard/pkg/theme"
-	"xarc.dev/taskvanguard/pkg/types"
+	"github.com/taskvanguard/taskvanguard/internal/analyzer"
+	"github.com/taskvanguard/taskvanguard/internal/taskwarrior"
+	"github.com/taskvanguard/taskvanguard/pkg/theme"
+	"github.com/taskvanguard/taskvanguard/pkg/types"
 )
 
 var addCmd = &cobra.Command{

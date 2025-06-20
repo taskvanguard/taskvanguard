@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/taskvanguard/taskvanguard/pkg/types"
 	"github.com/tmc/langchaingo/llms"
 	"github.com/tmc/langchaingo/llms/openai"
-	"xarc.dev/taskvanguard/pkg/types"
 )
 
 type Client struct {

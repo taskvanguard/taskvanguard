@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Feature: Add support for more LLM Apis
 - Feature: Add support for notifications
 - Fix: Guide cmd does not assign goals to tasks that are generated
+- Fix: init.go may has no access to .taskrc global var
 
 ## [0.2.1] - 2025-06-20
 

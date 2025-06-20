@@ -14,12 +14,12 @@ import (
 	"github.com/briandowns/spinner"
 	"github.com/google/uuid"
 	"github.com/spf13/cobra"
-	"xarc.dev/taskvanguard/internal/goals"
-	"xarc.dev/taskvanguard/internal/llm"
-	"xarc.dev/taskvanguard/internal/prompts"
-	"xarc.dev/taskvanguard/internal/taskwarrior"
-	"xarc.dev/taskvanguard/pkg/theme"
-	"xarc.dev/taskvanguard/pkg/types"
+	"github.com/taskvanguard/taskvanguard/internal/goals"
+	"github.com/taskvanguard/taskvanguard/internal/llm"
+	"github.com/taskvanguard/taskvanguard/internal/prompts"
+	"github.com/taskvanguard/taskvanguard/internal/taskwarrior"
+	"github.com/taskvanguard/taskvanguard/pkg/theme"
+	"github.com/taskvanguard/taskvanguard/pkg/types"
 )
 
 // GuideResponse is returned by the LLM guide session.

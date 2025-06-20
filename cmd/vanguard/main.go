@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"xarc.dev/taskvanguard/cmd"
+	"github.com/taskvanguard/taskvanguard/cmd"
 )
 
 func main() {

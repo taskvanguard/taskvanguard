@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"xarc.dev/taskvanguard/internal/config"
-	"xarc.dev/taskvanguard/pkg/theme"
+	"github.com/taskvanguard/taskvanguard/internal/config"
+	"github.com/taskvanguard/taskvanguard/pkg/theme"
 )
 
 var initCmd = &cobra.Command{

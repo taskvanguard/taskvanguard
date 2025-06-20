@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"xarc.dev/taskvanguard/internal/config"
+	"github.com/taskvanguard/taskvanguard/internal/config"
 
-	"xarc.dev/taskvanguard/pkg/types"
+	"github.com/taskvanguard/taskvanguard/pkg/types"
 )
 
 type RuntimeContext struct {

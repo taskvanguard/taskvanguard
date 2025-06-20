@@ -3,7 +3,7 @@ package filter
 import (
 	"strings"
 
-	"xarc.dev/taskvanguard/pkg/types"
+	"github.com/taskvanguard/taskvanguard/pkg/types"
 )
 
 // FilterTasks filters tasks based on project and tag blacklist/whitelist configuration

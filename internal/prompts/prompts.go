@@ -5,8 +5,8 @@ import (
 
 	"text/template"
 
-	"xarc.dev/taskvanguard/assets"
-	"xarc.dev/taskvanguard/pkg/types"
+	"github.com/taskvanguard/taskvanguard/assets"
+	"github.com/taskvanguard/taskvanguard/pkg/types"
 )
 
 // Structs shared for templating

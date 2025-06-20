@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"xarc.dev/taskvanguard/pkg/types"
+	"github.com/taskvanguard/taskvanguard/pkg/types"
 )
 
 func TaskSuggestionToArgs(s types.TaskAnalysisResult) []string {

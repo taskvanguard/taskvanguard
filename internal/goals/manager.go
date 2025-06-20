@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os/exec"
 
-	"xarc.dev/taskvanguard/internal/taskwarrior"
-	"xarc.dev/taskvanguard/pkg/types"
+	"github.com/taskvanguard/taskvanguard/internal/taskwarrior"
+	"github.com/taskvanguard/taskvanguard/pkg/types"
 )
 
 type Manager struct {

@@ -4,8 +4,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/taskvanguard/taskvanguard/pkg/types"
 	"gopkg.in/yaml.v3"
-	"xarc.dev/taskvanguard/pkg/types"
 )
 
 func Load() (*types.Config, error) {
