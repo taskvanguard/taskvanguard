@@ -26,7 +26,7 @@ categorization, priority adjustments, and potential task relationships.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		s := spinner.New(spinner.CharSets[40], 100*time.Millisecond) 
-		s.Prefix = "Analyzing your task list... "
+		s.Prefix = "→ Analyzing your task list... "
 		s.Start()
 	
 		env, err := taskwarrior.Bootstrap(cmd)
@@ -80,7 +80,7 @@ categorization, priority adjustments, and potential task relationships.`,
 		}
 
 		// Count and display task count
-		fmt.Printf("Found %d tasks for analysis\n", len(taskList))
+		fmt.Printf("\n→ Found %d tasks for analysis!\n", len(taskList))
 
 		// Convert tasks to task args format for batch processing
 		taskArgs := make([]string, len(taskList))
