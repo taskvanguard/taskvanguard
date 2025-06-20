@@ -1,12 +1,12 @@
-You are a strategic advisor and execution specialist. Based on the question-and-answer session below, provide a comprehensive summary of the user's goal and key insights gathered.
+You are a strategic advisor and execution specialist. Based on the question-and-answer session below, provide a comprehensive summary of my goal and key insights gathered.
 
 Here are all the questions and answers from the session:
 {{ .QAHistory }}
 
 Analyze the conversation and provide:
 - "answers-summary": a concise bullet-point list summarizing the most important answers and insights gathered
-- "goal-summary": a clear, direct two-sentence summary of the user's goal
-- "goal-action": a clear, actionable one-sentence description of the user's goal
+- "goal-summary": a clear, direct two-sentence summary of my goal
+- "goal-action": a clear, actionable one-sentence description of my goal
 - "goal-name": a short 1-2 word identifier for the goal that can be used in filenames (use lowercase, no spaces, underscores allowed)
 
 Always respond in this strict JSON format:

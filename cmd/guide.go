@@ -14,6 +14,7 @@ import (
 	"github.com/briandowns/spinner"
 	"github.com/google/uuid"
 	"github.com/spf13/cobra"
+	"xarc.dev/taskvanguard/internal/goals"
 	"xarc.dev/taskvanguard/internal/llm"
 	"xarc.dev/taskvanguard/internal/prompts"
 	"xarc.dev/taskvanguard/internal/taskwarrior"
@@ -62,6 +63,7 @@ type TaskWarriorTask struct {
 	Tags        []string                 `json:"tags,omitempty"`
 	Priority    string                   `json:"priority,omitempty"`
 	Depends     string                   `json:"depends,omitempty"`
+	Goal        string                   `json:"goal,omitempty"`
 	Annotations []TaskWarriorAnnotation  `json:"annotations,omitempty"`
 }
 
@@ -152,7 +154,7 @@ func promptForGoal(totalQuestions int) string {
 	fmt.Println(theme.Title("\n───────────────────────────────────────────────"))
 	fmt.Println(theme.Title("          🏔️ GOAL GUIDANCE:"))
 	fmt.Println(theme.Title("───────────────────────────────────────────────"))
-	fmt.Printf("%s %s %s: ", theme.Title("→"), theme.Info(fmt.Sprintf("[1/%d] Question: ", totalQuestions)), theme.Info("What is a specific goal you want to achieve?"))
+	fmt.Printf("%s %s %s: ", theme.Title("→"), fmt.Sprintf("[1/%d] Question: ", totalQuestions), theme.Info("What is a specific goal you want to achieve?"))
 	
 	reader := bufio.NewReader(os.Stdin)
 	goal, err := reader.ReadString('\n')
@@ -163,7 +165,7 @@ func promptForGoal(totalQuestions int) string {
 }
 
 func promptForTimeframe(totalQuestions int) string {
-	fmt.Printf("%s %s %s: ", theme.Title("→"), theme.Info(fmt.Sprintf("[2/%d] Question: ", totalQuestions)), theme.Info("What is a realistic timeframe for achieving this goal?"))
+	fmt.Printf("%s %s %s: ", theme.Title("→"), fmt.Sprintf("[2/%d] Question: ", totalQuestions), theme.Info("What is a realistic timeframe for achieving this goal?"))
 	
 	reader := bufio.NewReader(os.Stdin)
 	timeframe, err := reader.ReadString('\n')
@@ -386,11 +388,70 @@ func createRoadmapPrompt(cfg *types.Config, guideResult *GuideResponse) (string,
 	return prompt, nil
 }
 
+// createGoalFromGuideResult creates a goal in TaskWarrior based on the guide result
+func createGoalFromGuideResult(cfg *types.Config, guideResult *GuideResponse) (goalUUID string, goalID int, err error) {
+	goalsManager := goals.NewManager(cfg)
+	
+	// Use goal name or fallback to goal summary
+	goalDescription := guideResult.GoalAction
+	if goalDescription == "" {
+		goalDescription = guideResult.GoalSummary
+	}
+	
+	// Create the goal
+	_, taskID, err := goalsManager.AddGoal([]string{goalDescription})
+	if err != nil {
+		return "", 0, fmt.Errorf("failed to create goal: %w", err)
+	}
+	
+	// Get the UUID of the created goal
+	goal, err := goalsManager.ShowGoal(fmt.Sprintf("%d", taskID))
+	if err != nil {
+		return "", 0, fmt.Errorf("failed to get created goal: %w", err)
+	}
+	
+	return goal.UUID, taskID, nil
+}
+
+// promptForAnalyze asks the user if they want to run analyze command automatically
+func promptForAnalyze(goalUUID string) bool {
+	fmt.Printf("\n%s %s %s: ", theme.Title("→"), theme.Info("Analyze and improve these tasks automatically?"), "[Y]es/[n]o")
+	
+	var response string
+	fmt.Scanln(&response)
+	response = strings.TrimSpace(strings.ToLower(response))
+	
+	return response == "y" || response == "yes" || response == ""
+}
+
+// runAnalyzeCommand executes the analyze command for the goal tasks
+func runAnalyzeCommand(cfg *types.Config, goalUUID string) error {
+	fmt.Printf("%s %s\n", "🔧 Selected tasks linked with goal:", goalUUID)
+	
+	// Create a new cobra command context for analyze
+	// This is cleaner than modifying global state
+	analyzeArgs := []string{fmt.Sprintf("goal:%s", goalUUID)}
+	
+	// Execute the analyze command by calling its Run function directly
+	analyzeCmd.Run(analyzeCmd, analyzeArgs)
+	
+	return nil
+}
+
 // generateRoadmap creates a roadmap from the guide result and displays it.
 func generateRoadmap(cfg *types.Config, guideResult *GuideResponse) {
 	fmt.Println(theme.Title("\n───────────────────────────────────────────────"))
 	fmt.Println(theme.Title("          🗺️  ROADMAP GENERATION:"))
 	fmt.Println(theme.Title("───────────────────────────────────────────────"))
+	
+	// Create goal first
+	goalUUID, goalID, err := createGoalFromGuideResult(cfg, guideResult)
+	if err != nil {
+		fmt.Printf("%s %s\n", theme.Error("❌ Failed to create goal:"), err.Error())
+		return
+	}
+	
+	fmt.Printf("%s Goal created (ID: %d, UUID: %s)\n", theme.Success("✅"), goalID, goalUUID)
 	
 	llmClient, err := llm.NewClient(&cfg.LLM)
 	if err != nil {
@@ -444,9 +505,9 @@ func generateRoadmap(cfg *types.Config, guideResult *GuideResponse) {
 		return
 	}
 
-	displayRoadmap(roadmapTasks, guideResult)
+	displayRoadmap(roadmapTasks, guideResult, goalUUID)
 	
-	if err := generateRoadmapMarkdown(roadmapTasks, guideResult); err != nil {
+	if err := generateRoadmapMarkdown(roadmapTasks, guideResult, goalUUID); err != nil {
 		fmt.Printf("%s %s\n", theme.Warn("⚠️  Failed to generate markdown file:"), err.Error())
 	} else {
 		timestamp := time.Now().Format("2006-01-02_15-04-05")
@@ -456,62 +517,94 @@ func generateRoadmap(cfg *types.Config, guideResult *GuideResponse) {
 		} else {
 			filename = fmt.Sprintf("roadmap_%s.md", timestamp)
 		}
-		fmt.Printf("%s %s\n", theme.Success("📄 Roadmap saved to:"), filename)
+		fmt.Printf("%s %s\n", theme.Success("✅ Roadmap saved to:"), filename)
 	}
-	
+
+	fmt.Printf("%s %s\n", theme.Warn("↪️ Next Steps:"), "Tasks are ready for import into TaskWarrior")
+
 	if promptForTaskImport() {
-		if err := importTasksToTaskWarrior(roadmapTasks); err != nil {
+		if err := importTasksToTaskWarrior(roadmapTasks, goalUUID); err != nil {
 			fmt.Printf("%s %s\n", theme.Error("❌ Failed to import tasks:"), err.Error())
 		} else {
 			fmt.Printf("%s %s\n", theme.Success("✅ Tasks imported successfully!"), "")
+			
+			// Ask if user wants to run analyze automatically
+			if promptForAnalyze(goalUUID) {
+				fmt.Printf("%s Running analyze for goal tasks...\n", theme.Info("🚀"))
+				if err := runAnalyzeCommand(cfg, goalUUID); err != nil {
+					fmt.Printf("%s %s\n", theme.Error("❌ Failed to run analyze:"), err.Error())
+					fmt.Printf("%s %s\n", theme.Info("💡 Manual command:"), fmt.Sprintf("vanguard analyze goal:%s", goalUUID))
+				}
+			} else {
+				fmt.Printf("%s %s\n", theme.Info("💡 Manual command:"), fmt.Sprintf("vanguard analyze goal:%s", goalUUID))
+			}
 		}
 	}
 }
 
-func displayRoadmap(tasks []RoadmapTask, guideResult *GuideResponse) {
+func displayRoadmap(tasks []RoadmapTask, guideResult *GuideResponse, goalUUID string) {
 	fmt.Printf("%s %s\n\n", theme.Success("✅ Roadmap Generated!"), "")
-	fmt.Printf("%s %s\n", theme.Info("🎯 Goal:"), guideResult.GoalSummary)
-	fmt.Printf("%s %d tasks\n\n", theme.Info("📋 Plan:"), len(tasks))
+	fmt.Println(theme.Title("\n───────────────────────────────────────────────"))
+	fmt.Printf("%s %s %s\n", theme.Info("🏔️"), theme.Title(guideResult.GoalAction), theme.Unimportant("(" + goalUUID + ")"))
+	fmt.Println(theme.Title("───────────────────────────────────────────────"))
+
+	fmt.Printf("%s %s\n","ℹ️", guideResult.GoalSummary)
+	fmt.Printf("%s %s tasks \n\n", "☑️", theme.Info(len(tasks)))
 
 	for i, task := range tasks {
 		fmt.Printf("%s %s\n", theme.Title(fmt.Sprintf("%d.", i+1)), theme.Success(task.Description))
 		
-		if task.Project != "" {
-			fmt.Printf("   %s %s\n", theme.Info("📁 Project:"), task.Project)
-		}
-		
-		if len(task.Tags) > 0 {
-			fmt.Printf("   %s %s\n", theme.Info("🏷️  Tags:"), strings.Join(task.Tags, ", "))
-		}
+		// if task.Priority != "" {
+		// 	priorityColor := theme.Info
+		// 	if task.Priority == "High" {
+		// 		priorityColor = theme.Error
+		// 	} else if task.Priority == "Medium" {
+		// 		priorityColor = theme.Warn
+		// 	}
+		// 	fmt.Printf("   %s %s", "⚡", priorityColor(task.Priority))
+		// }
 		
 		if task.Priority != "" {
-			priorityColor := theme.Info
-			if task.Priority == "High" {
-				priorityColor = theme.Error
-			} else if task.Priority == "Medium" {
-				priorityColor = theme.Warn
-			}
-			fmt.Printf("   %s %s\n", theme.Info("⚡ Priority:"), priorityColor(task.Priority))
+			fmt.Printf("   %s %s", "⚡", task.Priority)
 		}
-		
+
 		if task.Estimate != "" {
-			fmt.Printf("   %s %s\n", theme.Info("⏱️  Estimate:"), task.Estimate)
+			fmt.Printf("   %s %s", "⏱️", task.Estimate)
 		}
-		
+
+		tags := make([]string, len(task.Tags))
+		for i, t := range task.Tags {
+			tags[i] = "+" + t
+		}
+
+		if len(task.Tags) > 0 {
+			fmt.Printf("   %s %s\n", theme.Info("🏷 "), strings.Join(tags, ", "))
+		} else {
+			fmt.Println()
+		}
+
+		if task.Project != "" {
+			fmt.Printf("   %s %s", theme.Info("📁 Project:"), task.Project)
+		}
+
 		if len(task.Depends) > 0 {
 			var dependsStr []string
 			for _, dep := range task.Depends {
 				dependsStr = append(dependsStr, fmt.Sprintf("#%d", dep))
 			}
 			fmt.Printf("   %s %s\n", theme.Info("🔗 Depends:"), strings.Join(dependsStr, ", "))
+		} else {
+			fmt.Println()
 		}
-		
+
+		fmt.Println()
+
 		if len(task.Resources) > 0 {
-			fmt.Printf("   %s %s\n", theme.Info("🛠️  Resources:"), strings.Join(task.Resources, ", "))
+			fmt.Printf("   %s %s\n", theme.Info("🛠️ Resources:"), strings.Join(task.Resources, " "))
 		}
 		
 		if task.Risks != "" {
-			fmt.Printf("   %s %s\n", theme.Warn("⚠️  Risks:"), task.Risks)
+			fmt.Printf("   %s %s\n", theme.Info("⚠️ Risks:"), task.Risks)
 		}
 		
 		if task.Metrics != "" {
@@ -519,18 +612,15 @@ func displayRoadmap(tasks []RoadmapTask, guideResult *GuideResponse) {
 		}
 		
 		if task.DecisionPoint {
-			fmt.Printf("   %s %s\n", theme.Error("🔄 Decision Point:"), "Review and adapt here")
+			fmt.Printf("   %s %s\n", theme.Info("🔄 Decision Point:"), "Review and adapt here")
 		}
 		
 		fmt.Println()
 	}
-
-	fmt.Printf("%s %s\n", theme.Warn("💡 Next Steps:"), "Tasks are ready for import into TaskWarrior")
-	fmt.Printf("%s %s\n", theme.Info("🚀 Pro Tip:"), "Use `vanguard analyze` ")
 }
 
-func generateRoadmapMarkdown(tasks []RoadmapTask, guideResult *GuideResponse) error {
-	markdown := formatRoadmapMarkdown(tasks, guideResult)
+func generateRoadmapMarkdown(tasks []RoadmapTask, guideResult *GuideResponse, goalUUID string) error {
+	markdown := formatRoadmapMarkdown(tasks, guideResult, goalUUID)
 	
 	// Create filename with goal-name and timestamp
 	timestamp := time.Now().Format("2006-01-02_15-04-05")
@@ -555,15 +645,19 @@ func generateRoadmapMarkdown(tasks []RoadmapTask, guideResult *GuideResponse) er
 	return nil
 }
 
-func formatRoadmapMarkdown(tasks []RoadmapTask, guideResult *GuideResponse) string {
+func formatRoadmapMarkdown(tasks []RoadmapTask, guideResult *GuideResponse, goalUUID string) string {
 	var md strings.Builder
 	
 	// Header
 	md.WriteString("# Goal Roadmap\n\n")
 	
-	// Goal summary
-	md.WriteString("## 🏔️ Goal\n\n")
-	md.WriteString(guideResult.GoalSummary + "\n\n")
+	// Goal information
+	md.WriteString("## 🏔️ Goal Information\n\n")
+	md.WriteString(fmt.Sprintf("**Goal UUID:** `%s`\n\n", goalUUID))
+	if guideResult.GoalName != "" {
+		md.WriteString(fmt.Sprintf("**Goal Name:** %s\n\n", guideResult.GoalName))
+	}
+	md.WriteString(fmt.Sprintf("**Goal Description:** %s\n\n", guideResult.GoalSummary))
 	
 	// Key details
 	if guideResult.AnswersSummary != "" {
@@ -627,7 +721,7 @@ func formatRoadmapMarkdown(tasks []RoadmapTask, guideResult *GuideResponse) stri
 	// Footer
 	md.WriteString("---\n\n")
 	md.WriteString("**💡 Next Steps:** Tasks are ready for import into TaskWarrior\n\n")
-	md.WriteString("**🚀 Pro Tip:** Start with the highest priority tasks first\n\n")
+	// md.WriteString("**🚀 Pro Tip:** Start with the highest priority tasks first\n\n")
 	md.WriteString(fmt.Sprintf("*Generated on %s*\n", time.Now().Format("2006-01-02 15:04:05")))
 	
 	return md.String()
@@ -643,7 +737,7 @@ func promptForTaskImport() bool {
 	return response == "y" || response == "yes" || response == ""
 }
 
-func convertToTaskWarriorFormat(roadmapTasks []RoadmapTask) ([]TaskWarriorTask, map[string]string, error) {
+func convertToTaskWarriorFormat(roadmapTasks []RoadmapTask, goalUUID string) ([]TaskWarriorTask, map[string]string, error) {
 	var twTasks []TaskWarriorTask
 	idToUUID := make(map[string]string)
 	now := time.Now().UTC().Format("20060102T150405Z")
@@ -711,6 +805,7 @@ func convertToTaskWarriorFormat(roadmapTasks []RoadmapTask) ([]TaskWarriorTask, 
 			Project:     task.Project,
 			Tags:        task.Tags,
 			Priority:    priority,
+			Goal:        goalUUID,
 			Annotations: annotations,
 		}
 		
@@ -736,8 +831,8 @@ func convertToTaskWarriorFormat(roadmapTasks []RoadmapTask) ([]TaskWarriorTask, 
 	return twTasks, idToUUID, nil
 }
 
-func importTasksToTaskWarrior(roadmapTasks []RoadmapTask) error {
-	twTasks, _, err := convertToTaskWarriorFormat(roadmapTasks)
+func importTasksToTaskWarrior(roadmapTasks []RoadmapTask, goalUUID string) error {
+	twTasks, _, err := convertToTaskWarriorFormat(roadmapTasks, goalUUID)
 	if err != nil {
 		return fmt.Errorf("failed to convert tasks: %w", err)
 	}
