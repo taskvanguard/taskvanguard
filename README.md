@@ -21,7 +21,7 @@
 Your tactical advisor at the frontlines of your goals - powered by AI using TaskWarrior.
     <br>
 
-**TaskVanguard** is a lightweight, fast, highly configurable CLI wrapper for [TaskWarrior](https://taskwarrior.org/), written in Go. It brings AI-powered suggestions, smarter tagging, goal alignment, and real cognitive support to your daily workflow using any OpenAI-compatible LLM API.
+**TaskVanguard** is a lightweight, fast, highly configurable CLI wrapper for [TaskWarrior](https://taskwarrior.org/), written in Go. It brings AI-powered suggestions, smart tagging, goal management and cognitive support using any OpenAI-compatible LLM API.
 
 <br>
 <a href="https://buymeacoffee.com/taskvanguard">Donate</a>
@@ -47,7 +47,7 @@ Your tactical advisor at the frontlines of your goals - powered by AI using Task
 <!-- ABOUT THE PROJECT -->
 ## What is TaskVanguard?
 
-Use taskvanguard add <task> like taskwarrior add <task>. TaskVanguard creates the task, then suggests improvements using your LLM of choice (OpenAI, Deepseek, etc).
+Use `vanguard add <task>` just like `taskwarrior add <task>`. TaskVanguard creates the task, then suggests improvements using an LLM (OpenAI, Deepseek, etc).
 
 <div align="center">
 
@@ -55,14 +55,15 @@ Use taskvanguard add <task> like taskwarrior add <task>. TaskVanguard creates th
 
 </div>
 
-- **AI-enhanced task creation:** Auto-improves task titles, tags, project assignment, and annotations.
-- **Context-aware prioritization:** Surfaces high-impact tasks and explains *why* you should do them now.
-- **Goal linking:** Assign tasks to goals and keep your focus on long-term outcomes.
-- **Batch analysis:** Mass-edit, annotate, or refactor your existing backlog using your LLM of choice.
-- **Subtask splitting:** Detects “too big” tasks and offers splits.
-- **Highly configurable:** Full YAML config, tag/project/goal blacklists, and fine-grained toggles.
+### Features
 
-**Tip:** You can stop the LLM from processing certain Tasks by blacklisting tags or projects, configure what annotations it should generate for your tasks, if any.   
+- **AI-enhanced task creation:** Auto-improves task titles, tags, project assignment and annotations.
+- **Goal linking:** Link tasks to goals and keep your focus on long-term outcomes.
+- **Batch analysis:** Mass-edit, annotate or refactor your existing backlog using an LLM.
+- **Subtask splitting:** Detects “too big” tasks and offers splitting.
+- **Highly configurable:** Full YAML config; confiure which tags and annotations are assigned by the LLM, if any.
+
+**Tip:** You can stop certain tasks from being sent to the LLM by blacklisting tags or projects.   
 
 
 ## Why TaskVanguard?
@@ -70,7 +71,7 @@ Use taskvanguard add <task> like taskwarrior add <task>. TaskVanguard creates th
 - **Tired of TaskWarrior leaving you stuck with “stale” high-priority tasks at the top of your list?**
 - **Want to break big tasks into actionables without manual splitting?**
 - **Need to shorten the amount of time spent thinking about tags and actionable task description?**
-- **Wish you had a second opinion on which tasks are high impact and for motivation?**
+- **Wish you had a second opinion on which tasks are high impact and reframing tasks?**
 
 **TaskVanguard** fills those gaps using LLMs for real cognitive support. It’s especially useful for ADHD-driven procrastination: it reduces friction to start and helps reframe daunting tasks.
 
@@ -106,18 +107,18 @@ go build -o vanguard
 - Creates a default config at ~/.config/taskvanguard/vanguardrc.yaml
 - Prompts for your LLM API key
 - Suggests shell alias: `alias tvg="vanguard"`
-- Ensure TaskWarrior is set up with task command working.
+- Ensures TaskWarrior is set up with task command working
 
 ### 4. Usage
 
 ```sh
 # Add a task (AI-augmented)
-vanguard add "Refactor onboarding flow" +project:infra +sb
+vanguard add "refactor onboarding flow" project:work
 
-# Analyze all tasks (refactoring, annotation suggestions)
-vanguard analyze --editor
+# Analyze all tasks (offers refactoring & suggests annotation)
+vanguard analyze
 
-# Get the one thing to do next (spotlight)
+# Get the one highly important task to do next (spotlight)
 vanguard spot
 ```
 
@@ -143,41 +144,41 @@ See ``vanguard --help`` for full options
 
 **Goal Management:**
 
-- Create major goals as tasks in `project:goals` just like you would add any other task.
-- Link any task to a goal for automatic relationship tracking.
+- Add  major goals as tasks in `project:goals` just like you would create any other task.
+- Link any task to a goal for automatic relationship tracking by using an uda (`vanguard goals link <task_id> <goal_id>`).
 
 
 ### Init
 
-- Create Default Config
-- Suggesting adding aliases for taskVanguard to .bashrc
-- Adding API Key
-- Backup Tasks & Config
-- Setup tags used by task vanguard
-- Add urgency coefficient factors for +sb, +cut, +fast, +key
-- Add urgency coefficient factors for goals (heavy minus)
-- Suggests to run `analyze`
+- Creates Default Config
+- Suggests adding aliases for taskVanguard to .bashrc
+- Asks for API Key
+- Backups Tasks & Config
+- Configures tags and annotations used by TaskVanguard
+- Adds urgency coefficient factors for +sb, +cut, +fast, +key
+- Adds urgency coefficient factors for goals (heavy minus)
 
 ### Add
 
-Processes the task with an LLM to suggest a better title, tags, and subtasks.
+Processes a task add command with an LLM to suggest better title, tags and annotations or splitting into subtasks.
 
-- `--no-tags` disables LLM tag suggestions.
-- `--no-subtasks` disables subtask splitting. Use config to disable task splitting by default.
+- `--no-tags` disables LLM suggestioning tags. (config on/off)
+- `--no-subtasks` disables subtask splitting. (config on/off)
+- `--no-annotations` disables LLM suggestioning annotatians. (config on/off)
 
 ### Spot
 
-Takes into account mood and context. You can use --no-prompt and use it in notifications. If you type in a mood and context it will remember that for 4 hours.
+Takes into account mood and context. You can use `--no-prompt` and use it for system notifications. If you type in a mood and context it will remember that for 4 hours.
 
 - `--no-prompt` skips questions about context and mood 
-- `--mood` provide the mood you are in
-- `--context` provide the context (for example location) 
+- `--mood <mood>` provide the mood you are in (for example energetic)
+- `--context <context>` provide the context (for example location) 
 - `--refresh` overwrite the cache with the context and mood you provide
 
 
 ### Analyze
 
-Analyzes either a specific or all your tasks and presents improved task description and tag assignment. If you analyze a specific task it suggests annotations and linking to a specific goal.
+Analyzes either a specific task or a list of tasks and suggests improved task descriptions and tag assignments. If you analyze a specific task it suggests annotations and linking to a specific goal.
 
 - `--batch-editor` opens your $EDITOR, allowing to edit all the task suggestions at once before applying them by saving and quits
 - `--interactive` apply suggestions one by one for each task
@@ -276,7 +277,7 @@ annotations:
 <!-- CONTRIBUTING -->
 ## Contributing
 
-⚠️ By submitting code or other contributions to this project, you agree to the Contributor License Agreement (CLA). See [CLA.md](./CLA.md) for details.
+By submitting code or other contributions to this project, you agree to the Contributor License Agreement (CLA). See [CLA.md](./CLA.md) for details.
 
 PRs and issues welcome. Open an enhancement issue or fork and create a pull request.
 
