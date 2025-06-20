@@ -57,23 +57,24 @@ Use `vanguard add <task>` just like `taskwarrior add <task>`. TaskVanguard creat
 
 ### Features
 
-- **AI-enhanced task creation:** Auto-improves task titles, tags, project assignment and annotations.
-- **Goal linking:** Link tasks to goals and keep your focus on long-term outcomes.
-- **Batch analysis:** Mass-edit, annotate or refactor your existing backlog using an LLM.
-- **Subtask splitting:** Detects “too big” tasks and offers splitting.
-- **Highly configurable:** Full YAML config; confiure which tags and annotations are assigned by the LLM, if any.
+✨ **Add:** AI-Enhanced Task Creation: Automatically improves task titles, tags, project and annotations for clarity and relevance.<br>
+🎯 **Spot:** Do the Right Thing Next: Identifies the most impactful next task. Based on urgency, context, and your current momentum.<br>
+🧭 **Guidance:** Generate concrete, step-by-step roadmaps to achieve goals using LLM-backed planning.<br>
+⛰️ **Goal Management:** Link tasks to long-term objectives and maintain alignment with your broader mission.<br>
+📦 **Batch Analysis:** Refactor, annotate entire task backlogs by tags or projects at once.<br>
+🗡️ **Subtask Splitting:** Suggests splitting up vague tasks and suggests clear, actionable subtasks.
 
 **Tip:** You can stop certain tasks from being sent to the LLM by blacklisting tags or projects.   
 
 
 ## Why TaskVanguard?
 
-- **Tired of TaskWarrior leaving you stuck with “stale” high-priority tasks at the top of your list?**
-- **Want to break big tasks into actionables without manual splitting?**
-- **Need to shorten the amount of time spent thinking about tags and actionable task description?**
-- **Wish you had a second opinion on which tasks are high impact and reframing tasks?**
+- **Stalled by stale high-priority tasks?** Reframe what moves your mission forward.
+- **Tasks too broad or unclear?** Break them into precise, executable steps.
+- **Spending time on structure instead of action?** Let the system handle the overhead.
+- **Unsure what’s worth doing now?** Surface the tasks with real leverage.
 
-**TaskVanguard** fills those gaps using LLMs for real cognitive support. It’s especially useful for ADHD-driven procrastination: it reduces friction to start and helps reframe daunting tasks.
+**⚔️ TaskVanguard** fills those gaps using LLMs for real cognitive support. It’s especially useful for ADHD-driven procrastination: it reduces friction to start and helps reframe daunting tasks.
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
