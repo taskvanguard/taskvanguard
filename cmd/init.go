@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 	"xarc.dev/taskvanguard/internal/config"
@@ -18,12 +19,10 @@ var initCmd = &cobra.Command{
 	Long: `Initialize TaskVanguard with comprehensive setup including configuration,
 shell integration, tag management, goal tracking, and task backup.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		
 		var twConfigPath string
-		if twEnvPath := os.Getenv("TASKRC"); twEnvPath != "" {
-			twConfigPath = twEnvPath
-		} else {
-			twConfigPath = filepath.Join(os.Getenv("HOME"), ".taskrc")
+		twConfigPath, err := resolveTaskrcPath()
+		if err != nil {
+			fmt.Printf(theme.Error("failed to find TaskWarrior configuration file (.taskrc): %v"), err)
 		}
 		
 		var configPath string
@@ -120,7 +119,7 @@ func setupConfiguration(configPath string) {
 
 	// Check if config already exists
 	if _, err := os.Stat(configPath); err == nil {
-		fmt.Print(theme.Warn("Configuration file already exists. Overwrite? ") + theme.Info("y/n") + ": ")
+		fmt.Print(theme.Warn("TaskVanguard Configuration file already exists. Overwrite? ") + theme.Info("y/n") + ": ")
 		var response string
 		fmt.Scanln(&response)
 		if response != "y" && response != "Y" {
@@ -179,7 +178,6 @@ func setupConfiguration(configPath string) {
 	// }
 
 	fmt.Println(theme.Success("✔ Generated Config file successfully!"))
-	fmt.Println("")
 
 	provider := "openai"
 	apiKey := "YOUR_API_KEY_HERE"
@@ -195,7 +193,7 @@ func setupConfiguration(configPath string) {
 	// 	Tags: make(map[string]types.TagsMeta),
 	// }
 
-	fmt.Printf(theme.Title("LLM:\n Provider: %s\n APIKey: \"%s\"\n Model: %s\n"), provider, apiKey, model)
+	fmt.Printf(theme.Title("LLM:\n  Provider: %s\n  APIKey: \"%s\"\n  Model: %s\n"), provider, apiKey, model)
 
 	// Save config
 	_, err := config.CreateDefaultConfig(configPath)
@@ -224,13 +222,17 @@ func setupTaskBackup() {
 	fmt.Println(theme.Title("\n───────────────────────────────────────────────"))
 	fmt.Println(theme.Title("        3) TASK BACKUP"))
 	fmt.Println(theme.Title("───────────────────────────────────────────────"))
-	fmt.Print(theme.Title("Would you like to back up your existing tasks before proceeding? ") + theme.Info("y/n") + ": ")
+	fmt.Println("Note: Better backup your tasks manually by copying the folder. TaskVanguard uses task export which might not include some metadata.")
+	fmt.Println("")
+	fmt.Println(theme.Title("Would you like to export your existing tasks before proceeding? ") + theme.Info("y/n") + ": ")
 	fmt.Println("")
 
 	var response string
 	fmt.Scanln(&response)
 	if response == "y" || response == "Y" {
-		backupPath := filepath.Join(os.Getenv("HOME"), ".config", "taskvanguard", "task_backup.json")
+		timestamp := time.Now().Format("2006-01-02_15-04-05")
+		backupFilename := fmt.Sprintf("task_backup_%s.json", timestamp)
+		backupPath := filepath.Join(os.Getenv("HOME"), ".config", "taskvanguard", backupFilename)
 		cmd := exec.Command("task", "export")
 		output, err := cmd.Output()
 		if err != nil {
@@ -374,6 +376,33 @@ func setupGoalTracking(twConfigPath string) {
 
 func addUDAsToTaskrc(twConfigPath string) error {
 	
+	// Create backup of .taskrc before modifying
+	if _, err := os.Stat(twConfigPath); err == nil {
+		timestamp := time.Now().Format("2006-01-02_15-04-05")
+		backupFilename := fmt.Sprintf("taskrc_backup_%s", timestamp)
+		backupDir := filepath.Dir(twConfigPath)
+		backupPath := filepath.Join(backupDir, backupFilename)
+
+		// Ensure backup directory exists
+		if err := os.MkdirAll(filepath.Dir(backupPath), 0755); err != nil {
+			return fmt.Errorf("failed to create backup directory: %v", err)
+		}
+		
+		// Copy .taskrc to backup
+		data, err := os.ReadFile(twConfigPath)
+		if err != nil {
+			return fmt.Errorf("failed to read .taskrc for backup: %v", err)
+		}
+		
+		if err := os.WriteFile(backupPath, data, 0644); err != nil {
+			return fmt.Errorf("failed to create .taskrc backup: %v", err)
+		}
+		
+		fmt.Println("")
+		fmt.Printf("✔ Backed up .taskrc:\n %s -> %s \n", twConfigPath, backupPath)
+		fmt.Println("")
+	}
+	
 	// Read existing .taskrc
 	content := ""
 	if data, err := os.ReadFile(twConfigPath); err == nil {
@@ -382,12 +411,14 @@ func addUDAsToTaskrc(twConfigPath string) error {
 
 	// UDAs to add
 	udas := []string{
+		"# TaskVanguard Specific #",
 		"uda.goal.label=Goal",
 		"uda.goal.type=string",
 		"uda.goal.values=",
 		"uda.skipped.label=Skipped",
 		"uda.skipped.type=numeric",
 		"uda.skipped.values=0",
+		"# TaskVanguard End #",
 	}
 
 	// Check if UDAs already exist
@@ -401,3 +432,24 @@ func addUDAsToTaskrc(twConfigPath string) error {
 	return os.WriteFile(twConfigPath, []byte(content), 0644)
 }
 
+func resolveTaskrcPath() (string, error) {
+	twEnvPath := os.Getenv("TASKRC")
+	if twEnvPath != "" {
+		// Is it absolute?
+		if filepath.IsAbs(twEnvPath) {
+			return twEnvPath, nil
+		}
+		// Otherwise, resolve relative to working directory
+		cwd, err := os.Getwd()
+		if err != nil {
+			return "", err
+		}
+		return filepath.Join(cwd, twEnvPath), nil
+	}
+	// Default: $HOME/.taskrc
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(home, ".taskrc"), nil
+}
