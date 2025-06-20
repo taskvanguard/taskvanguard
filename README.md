@@ -57,8 +57,8 @@ Use `vanguard add <task>` just like `taskwarrior add <task>`. TaskVanguard creat
 
 ### Features
 
-✨ **Add:** AI-Enhanced Task Creation: Automatically improves task titles, tags, project and annotations for clarity and relevance.<br>
-🎯 **Spot:** Do the Right Thing Next: Identifies the most impactful next task. Based on urgency, context, and your current momentum.<br>
+✨ **Add:** AI-Enhanced Task Creation: Improves task titles, tags, project and annotations for clarity and relevance.<br>
+🎯 **Spot:** Do the Right Thing Next: Identifies the most impactful next task. Based on urgency, context, mood etc.<br>
 🧭 **Guidance:** Generate concrete, step-by-step roadmaps to achieve goals using LLM-backed planning.<br>
 ⛰️ **Goal Management:** Link tasks to long-term objectives and maintain alignment with your broader mission.<br>
 📦 **Batch Analysis:** Refactor, annotate entire task backlogs by tags or projects at once.<br>
