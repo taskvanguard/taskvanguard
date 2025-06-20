@@ -389,7 +389,7 @@ Project Link: [https://github.com/taskvanguard/taskvanguard](https://github.com/
 [license-url]: https://github.com/taskvanguard/taskvanguard/blob/master/LICENSE.txt
 <!-- [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555 -->
 <!-- [linkedin-url]: https://linkedin.com/in/linkedin_username -->
-[product-screenshot]: docs/images/screenshot.webp
+[product-screenshot]: docs/images/demo.gif
 
 [Go.dev]: https://go.dev/
 [Go-shield]: https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white
