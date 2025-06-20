@@ -134,6 +134,7 @@ See ``vanguard --help`` for full options
 | `vanguard add`     | Creates tasks with AI-augmented improvements                      |
 | `vanguard analyze` | Provides LLM-driven review, tags, and refactoring |
 | `vanguard spot`    | Surfaces the single best task to do next        |
+| `vanguard goals`   | Manage goals and link tasks to achieve them     |
 
 **TaskVanguard introduces several high-leverage tags by default:**
 
@@ -146,7 +147,7 @@ See ``vanguard --help`` for full options
 
 - Add  major goals as tasks in `project:goals` just like you would create any other task.
 - Link any task to a goal for automatic relationship tracking by using an uda (`vanguard goals link <task_id> <goal_id>`).
-
+- Use the `vanguard goals` command for comprehensive goal management.
 
 ### Init
 
@@ -182,6 +183,56 @@ Analyzes either a specific task or a list of tasks and suggests improved task de
 
 - `--batch-editor` opens your $EDITOR, allowing to edit all the task suggestions at once before applying them by saving and quits
 - `--interactive` apply suggestions one by one for each task
+
+### Goals
+
+Goals are primarily managed in the background. When you use `vanguard guide`, a goal is defined and a step-by-step roadmap is generated to help you achieve it. All related tasks are automatically linked to that goal.
+
+By associating tasks with goals, TaskVanguard can better understand the context in which each task exists-going beyond simple tagging (like +sb or +key). Goals are actually regular tasks within a special project (named goals by default, but customizable in your config).
+
+The purpose of goals is to help you maintain focus on long-term outcomes and ensure your daily tasks stay aligned with your bigger objectives.
+
+#### Goal Commands
+
+| Command                    | Description                                    |
+| -------------------------- | ---------------------------------------------- |
+| `vanguard goals list`      | List all your goals                           |
+| `vanguard goals add <desc>` | Create a new goal                             |
+| `vanguard goals show <id>` | Show detailed information about a goal/task   |
+| `vanguard goals modify <id> <args>` | Modify an existing goal               |
+| `vanguard goals delete <id>` | Delete a goal                               |
+| `vanguard goals link <id1> <id2>` | Link a task to a goal (order-agnostic) |
+| `vanguard goals unlink <id1> <id2>` | Remove task-goal link               |
+| `vanguard goals links <id>` | Show all tasks linked to a goal or goal linked to a task |
+
+#### Goal Usage
+
+```bash
+# Create a new goal
+vanguard goals add "complete certification in cloud architecture"
+
+# Link an existing task to a goal (works both ways)
+vanguard goals link <task_id> <goal_id>   # task 123 -> goal 456
+vanguard goals link <goal_id> <task_id>   # same result
+
+# See what tasks are linked to a goal
+vanguard goals links <goal_id>
+
+# See which goal a task is linked to
+vanguard goals links <task_id>
+
+# Modify a goal like any TaskWarrior task
+vanguard goals modify <goal_id> "priority:H due:2024-12-31"
+```
+
+#### Goal Features
+
+- **TaskWarrior Integration**: Goals are stored as regular TaskWarrior tasks in a dedicated project
+- **Flexible Linking**: Link any task to any goal using the `goal` UDA (User Defined Attribute)
+- **Order-Agnostic Commands**: Link/unlink commands work regardless of argument order
+- **Relationship Tracking**: Easily see which tasks contribute to which goals and vice versa
+- **Configurable Project**: Set your own goal project name via `goal_project_name` in config
+- **Full TaskWarrior Compatibility**: Goals support all TaskWarrior features (tags, priority, due dates, etc.)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
