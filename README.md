@@ -203,11 +203,7 @@ Analyzes either a specific task or a list of tasks and suggests improved task de
 
 ### Goals
 
-Goals are primarily managed in the background. When you use `vanguard guide`, a goal is defined and a step-by-step roadmap is generated to help you achieve it. All related tasks are automatically linked to that goal.
-
-By associating tasks with goals, TaskVanguard can better understand the context in which each task exists-going beyond simple tagging (like +sb or +key). Goals are actually regular tasks within a special project (named goals by default, but customizable in your config).
-
-The purpose of goals is to help you maintain focus on long-term outcomes and ensure your daily tasks stay aligned with your bigger objectives.
+Goals are primarily managed in the background. When you use `vanguard guide`, a goal is defined and a step-by-step roadmap is generated to help you achieve it. All related tasks are automatically linked to that goal. By associating tasks with goals, TaskVanguard can better understand the context in which each task exists-going beyond simple tagging (like +sb or +key). Goals are actually regular tasks within a special project (named goals by default, but customizable in your config).
 
 #### Goal Commands
 
