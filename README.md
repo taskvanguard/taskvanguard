@@ -126,6 +126,35 @@ See ``vanguard --help`` for full options
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## Usage
+
+**Tags**
+
+The following Tags are added by default:
+
+- `+sb` **Snowballing**:  Task has the potential for compounding effects (positive or negative); tackling it may unlock cascading benefits or risks.
+- `+cut` **Cut**: Task can save time or money in the future.
+- `+fast` **Fast**: Task can be finished quickly and requires minimal setup.
+- `+key` **Key**: High-impact task that directly drives one or more of your goals.
+
+
+**Annotations**
+
+By default the following annotations are added via LLM to the tasks you refactor with TaskVanguard:
+
+- `short_reward:` immediate benefit
+- `long_reward:` strategic benefit
+- `risk:` what if not done
+- `tip:` practical, actionable, insightful
+
+
+**Goal Management:**
+
+- Add  major goals as tasks in `project:goals` just like you would create any other task.
+- Link any task to a goal for automatic relationship tracking by using an uda (`vanguard goals link <task_id> <goal_id>`).
+- Use the `vanguard goals` command for comprehensive goal management.
+
+
 ## Commands
 
 | Command            | Description                                     |
@@ -136,18 +165,6 @@ See ``vanguard --help`` for full options
 | `vanguard spot`    | Surfaces the single best task to do next        |
 | `vanguard goals`   | Manage goals and link tasks to achieve them     |
 
-**TaskVanguard introduces several high-leverage tags by default:**
-
-- `+sb` **Snowballing**:  Task has the potential for compounding effects (positive or negative); tackling it may unlock cascading benefits or risks.
-- `+cut` **Cut**: Task can save time or money in the future.
-- `+fast` **Fast**: Task can be finished quickly and requires minimal setup.
-- `+key` **Key**: High-impact task that directly drives one or more of your goals.
-
-**Goal Management:**
-
-- Add  major goals as tasks in `project:goals` just like you would create any other task.
-- Link any task to a goal for automatic relationship tracking by using an uda (`vanguard goals link <task_id> <goal_id>`).
-- Use the `vanguard goals` command for comprehensive goal management.
 
 ### Init
 
