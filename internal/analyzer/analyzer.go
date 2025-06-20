@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"xarc.dev/taskvanguard/internal/llm"
 	"xarc.dev/taskvanguard/internal/prompts"
@@ -12,6 +13,25 @@ import (
 	"xarc.dev/taskvanguard/pkg/types"
 	"xarc.dev/taskvanguard/pkg/utils"
 )
+
+// cleanMarkdownCodeFences removes markdown code fence markers from LLM responses
+func cleanMarkdownCodeFences(response string) string {
+	response = strings.TrimSpace(response)
+	
+	// Remove ```json at the beginning
+	if strings.HasPrefix(response, "```json") {
+		response = strings.TrimPrefix(response, "```json")
+		response = strings.TrimSpace(response)
+	}
+	
+	// Remove ``` at the end
+	if strings.HasSuffix(response, "```") {
+		response = strings.TrimSuffix(response, "```")
+		response = strings.TrimSpace(response)
+	}
+	
+	return response
+}
 
 func AnalyzeSingleTaskWithLLM(cfg *types.Config, taskArgs string, userGoals []types.Task, projects []string) (*types.TaskSuggestion, error) {
 	args := utils.ParseTaskArgs(taskArgs)
@@ -40,8 +60,11 @@ func AnalyzeSingleTaskWithLLM(cfg *types.Config, taskArgs string, userGoals []ty
 		return nil, err
 	}
 
+	// Clean markdown code fences from response
+	cleanedResponse := cleanMarkdownCodeFences(response)
+
 	var suggestion types.TaskSuggestion
-	if err := json.Unmarshal([]byte(response), &suggestion); err != nil {
+	if err := json.Unmarshal([]byte(cleanedResponse), &suggestion); err != nil {
 		return nil, fmt.Errorf("failed to parse LLM response: %v", err)
 	}
 
@@ -91,8 +114,11 @@ func AnalyzeBatchTasksWithLLM(cfg *types.Config, taskArgsList []string, userGoal
 			return nil, fmt.Errorf("failed to process batch %d-%d: %v", i+1, end, err)
 		}
 
+		// Clean markdown code fences from response
+		cleanedResponse := cleanMarkdownCodeFences(response)
+
 		var batchSuggestion types.BatchTaskSuggestion
-		if err := json.Unmarshal([]byte(response), &batchSuggestion); err != nil {
+		if err := json.Unmarshal([]byte(cleanedResponse), &batchSuggestion); err != nil {
 			return nil, fmt.Errorf("failed to parse LLM response for batch %d-%d: %v", i+1, end, err)
 		}
 
