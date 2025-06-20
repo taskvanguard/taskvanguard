@@ -1,4 +1,4 @@
-module xarc.dev/taskvanguard
+module github.com/taskvanguard/taskvanguard
 
 go 1.23.0
 
