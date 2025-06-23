@@ -15,17 +15,17 @@ var rootCmd = &cobra.Command{
 AI-powered guidance, motivation, and task categorization using LLM APIs.
 
 🚀 CORE FEATURES:
-• Impact analysis - Understand consequences of completing or delaying tasks
-• Snowball detection - Identify tasks that compound positively or negatively  
-• Goal alignment - Link tasks to strategic objectives
-• Smart tagging - AI-powered categorization (+sb, +cut, +fast, etc.)
+• Smart adding - AI-powered tagging (+sb, +cut, +fast, etc.) and annotations
+• Goal management - Link tasks to goals
+• Guidance - Helps figuring out the next best task to do and roadmaps 
 
 📋 AVAILABLE COMMANDS:
 • init     - Complete setup wizard (config, backup, tags, goals)
-• analyze  - Analyze task impact and provide recommendations
-• spot     - Quick task analysis with actionable insights
-• goals    - Manage strategic goals and link tasks to them
 • add      - Enhanced task creation with AI assistance
+• analyze  - Analyze task and provides recommendations
+• spot     - Picks one high impact, high urgency task to do right now
+• guide    - Asks a series of questions -> generates roadmap to achieve goal
+• goals    - Manage strategic goals and link tasks to them
 
 🔧 CONFIGURATION:
 Config stored at: ~/.config/taskvanguard/vanguardrc.yaml
@@ -33,11 +33,8 @@ Supports OpenAI and DeepSeek LLM providers
 
 ⚔️ QUICK START:
 1. Run 'taskvanguard init' to set up configuration
-2. Use 'taskvanguard spot' for quick task insights
-3. Try 'taskvanguard analyze' for detailed analysis
-
-💡 NOTE: TaskVanguard is non-invasive - it reads TaskWarrior data but never
-modifies your tasks directly. All changes are suggested commands you run yourself.
+2. Try 'taskvanguard analyze' for detailed analysis
+3. Use 'taskvanguard spot' to start completing tasks
 
 For any unrecognized commands, TaskVanguard forwards them directly to TaskWarrior.`,
 	Run: forwardToTaskWarrior,
