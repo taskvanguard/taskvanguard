@@ -24,7 +24,7 @@ Your tactical advisor at the frontlines of your goals - powered by AI using Task
 **TaskVanguard** is a lightweight, fast, highly configurable CLI wrapper for [TaskWarrior](https://taskwarrior.org/), written in Go. It brings AI-powered suggestions, smart tagging, goal management and cognitive support using any OpenAI-compatible LLM API.
 
 <br>
-<a href="https://buymeacoffee.com/taskvanguard">Donate</a>
+<a href="https://coff.ee/taskvanguard">Donate</a>
 &middot;
 <a href="https://github.com/taskvanguard/taskvanguard/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
 &middot;
