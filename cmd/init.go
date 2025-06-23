@@ -285,10 +285,10 @@ func setupTagManagement() {
 	// Suggest common useful tags
 	fmt.Println(theme.Info("Suggested tags:"))
 	commonTags := []string{
-		theme.Info("+sb: ") + "snowball", 
+		theme.Info("+sb: ") + "snowballing (compound effect)", 
 		theme.Info("+cut: ") + "saves time/money", 
-		theme.Info("+fast: ") + "quick task", 
-		theme.Info("+key: ") + "high impact",
+		theme.Info("+fast: ") + "quick task (less than 15 min)", 
+		theme.Info("+key: ") + "high impact (aligns with goals/high value)",
 	}
 	for _, tag := range commonTags {
 		fmt.Printf("  %s\n", theme.Success(tag))
