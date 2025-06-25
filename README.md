@@ -287,8 +287,8 @@ alias tvga="vanguard add"  # for completions
 
 ```yaml
 settings:
-    debug: true
-    enable_llm: false
+    debug: false
+    enable_llm: true
     split_tasks: true
     auto_import_tags: true
     auto_import_projects: true
