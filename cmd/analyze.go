@@ -291,7 +291,7 @@ func massEditViaEditor(client taskwarrior.Client, taskList []types.Task, suggest
 	defer os.Remove(tempFile.Name())
 	
 	// Write commands to temp file with explanatory header
-	header := "#!/bin/bash\n# TaskVanguard Analysis Results - Mass Edit Mode\n#\n# The commands below will modify your TaskWarrior tasks based on AI analysis.\n# You can:\n# - Delete any lines you don't want to execute\n# - Modify the task modify commands as needed\n# - Add comments with # prefix\n# - All remaining commands will be executed when you save and exit\n#\n# Format: task modify <task_id> <modifications>\n\n"
+	header := "#!/bin/bash\n# TaskVanguard Analysis Results - Mass Edit Mode:\n# - Delete any lines you don't want to execute\n# - Modify the task modify commands as needed\n# - All remaining commands will be executed when you save and exit\n#\n# Format: task modify <task_id> <modifications>\n\n"
 	content := header + strings.Join(commands, "\n") + "\n"
 	if _, err := tempFile.WriteString(content); err != nil {
 		tempFile.Close()
