@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix: Guide cmd does not assign goals to tasks that are generated
 - Fix: init.go may has no access to .taskrc global var
 
+## [0.2.5] - 2025-08-10
+
+- Feature: Improve Mass Analysis via Editor Mode
+- Bug: Instruct LLM to not put punctuation at the end of Task descriptions
+
 ## [0.2.4] - 2025-06-20
 
 - Improved --help contents
