@@ -75,7 +75,7 @@ func (c *Client) Chat(messages []Message) (string, error) {
 	}
 
 	ctx := context.Background()
-	completion, err := c.llm.GenerateContent(ctx, llmMessages, llms.WithTemperature(0.7))
+	completion, err := c.llm.GenerateContent(ctx, llmMessages)
 	if err != nil {
 		return "", err
 	}
