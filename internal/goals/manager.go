@@ -154,11 +154,24 @@ func (m *Manager) GetLinkedGoal(taskID string) (*types.Task, error) {
 		return nil, errors.New("task not found")
 	}
 
-	// Extract goal UUID from task (would need to check UDA fields)
-	// This would require extending the Task struct to include UDA fields
-	// For now, we'll implement basic functionality
-	
-	return nil, errors.New("getting linked goal not yet implemented - requires UDA field support")
+	// Check if task has a goal UUID
+	if task.Goal == "" {
+		return nil, nil // No goal linked
+	}
+
+	// Look up the goal by UUID
+	goals, err := m.client.GetGoals()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get goals: %v", err)
+	}
+
+	for _, goal := range goals {
+		if goal.UUID == task.Goal {
+			return &goal, nil
+		}
+	}
+
+	return nil, fmt.Errorf("goal with UUID %s not found", task.Goal)
 }
 
 // ShowLinks shows all links for a given ID (goal or task)

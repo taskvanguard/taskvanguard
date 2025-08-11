@@ -1,5 +1,10 @@
 package types
 
+type Annotation struct {
+	Entry       string `json:"entry"`
+	Description string `json:"description"`
+}
+
 type Task struct {
 	ID          int       `json:"id,omitempty"`
 	UUID        string    `json:"uuid"`
@@ -13,6 +18,8 @@ type Task struct {
 	Modified    TWTime    `json:"modified"`
 	Urgency     float64   `json:"urgency,omitempty"`
 	Skipped		int		  `json:"skipped"`
+	Annotations []Annotation `json:"annotations,omitempty"`
+	Goal        string    `json:"goal,omitempty"`
 }
 
 // type Goal struct {

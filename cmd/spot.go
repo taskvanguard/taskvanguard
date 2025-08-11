@@ -12,6 +12,7 @@ import (
 
 	"github.com/briandowns/spinner"
 	"github.com/spf13/cobra"
+	"github.com/taskvanguard/taskvanguard/internal/goals"
 	"github.com/taskvanguard/taskvanguard/internal/llm"
 	"github.com/taskvanguard/taskvanguard/internal/taskwarrior"
 	"github.com/taskvanguard/taskvanguard/pkg/theme"
@@ -22,8 +23,11 @@ type SpotlightResult struct {
 	TaskID     int    `json:"task_id"`
 	Title      string `json:"title"`
 	Reason     string `json:"reason"`
+	History    string `json:"history"`
+	Goal	   string `json:"goal"`
 	Estimated  string `json:"estimated"`
 	ContextTag string `json:"context_tag"`
+	Next 	   string `json:"next"`
 }
 
 type TaskContext struct {
@@ -135,7 +139,7 @@ func pickSpotlightTask(client *taskwarrior.Client, cfg *types.Config, taskContex
 		return SpotlightResult{}, fmt.Errorf("init llm client: %w", err)
 	}
 
-	prompt := createSpotlightPrompt(taskContext, tasks)
+	prompt := createSpotlightPrompt(taskContext, tasks, cfg)
 	messages := []llm.Message{
 		{Role: "user", Content: prompt},
 	}
@@ -180,6 +184,13 @@ func displaySpotlight(t SpotlightResult, silent bool) {
 		fmt.Printf("%s %s %s   ", "🕒", theme.Info("Estimated:"), t.Estimated)
 		fmt.Printf("%s %s %s\n", "🏷️", theme.Info("Context:"), t.ContextTag)
 		fmt.Printf("%s %s %s\n", "🔥", theme.Info("Why now:"), t.Reason)
+		if (len(t.History) > 0) {
+			fmt.Printf("%s %s %s\n", "📖", theme.Info("History:"), t.History)
+		}
+		if (len(t.Goal) > 0) {
+			fmt.Printf("%s %s %s\n", "⛰️", theme.Info("Goal:"), t.Goal)
+		}
+		fmt.Printf("%s %s %s\n", "☑️", theme.Info("Next:"), t.Next)
 		fmt.Printf("%s %s\n", theme.Warn("🚀 Ready?"), "You can do this now. Hit enter to start.")
 	}
 }
@@ -294,39 +305,66 @@ func loadContextFromEnv(moodFlag, contextFlag string, refresh bool) TaskContext 
 	}
 }
 
-func createSpotlightPrompt(taskContext TaskContext, tasks []types.Task) string {
+func createSpotlightPrompt(taskContext TaskContext, tasks []types.Task, cfg *types.Config) string {
+	// Create enhanced tasks with goal descriptions for LLM
+	type TaskForLLM struct {
+		types.Task
+		GoalDescription string `json:"goal_description,omitempty"`
+	}
+
+	var enhancedTasks []TaskForLLM
+	goalsManager := goals.NewManager(cfg)
+
+	for _, task := range tasks {
+		enhanced := TaskForLLM{Task: task}
+		
+		// If task has a goal, get its description
+		if task.Goal != "" {
+			linkedGoal, err := goalsManager.GetLinkedGoal(strconv.Itoa(task.ID))
+			if err == nil && linkedGoal != nil {
+				enhanced.GoalDescription = linkedGoal.Description
+			}
+		}
+		
+		enhancedTasks = append(enhancedTasks, enhanced)
+	}
+
+	tasksJSON, err := json.MarshalIndent(enhancedTasks, "  ", "  ")
+	if err != nil {
+		tasksJSON = []byte("[]")
+	}
+
 	prompt := fmt.Sprintf(`You are a productivity expert helping someone choose the best task to work on right now.
 
 Context:
 - Current mood: %s
-- Current location: %s
+- Current location: %s  
 - Time: %s
 
-Here are the top pending tasks sorted by urgency:
+Here are the top pending tasks sorted by urgency (JSON format):
 
-`, taskContext.Mood, taskContext.Location, time.Now().Format("3:04 PM"))
-
-	for i, task := range tasks {
-		prompt += fmt.Sprintf("%d. ID:%d - %s", i+1, task.ID, task.Description)
-		if task.Project != "" {
-			prompt += fmt.Sprintf(" (Project: %s)", task.Project)
-		}
-		if len(task.Tags) > 0 {
-			prompt += fmt.Sprintf(" [Tags: %s]", strings.Join(task.Tags, ", "))
-		}
-		prompt += fmt.Sprintf(" (Urgency: %.2f)\n", task.Urgency)
-	}
+%s`, taskContext.Mood, taskContext.Location, time.Now().Format("3:04 PM"), string(tasksJSON))
 
 	prompt += `
-Please analyze these tasks considering the person's current mood and location, then select the ONE best task to work on right now.
+Analyze the provided tasks and select the ONE best task for right now based on current context.
 
-Respond with ONLY a JSON object in this exact format:
+Rules:
+- Address the user as "you"
+- Return only valid JSON
+- Use empty strings ("") for optional fields when no data exists
+- For "history" field: if task was previously skipped, explain why; otherwise use empty string
+- Be direct and concise
+
+Required JSON format:
 {
-  "task_id": 123,
-  "title": "Reframed/simplified version of the task title",
-  "reason": "Brief explanation why this task is perfect for right now",
-  "estimated": "Quick time estimate (e.g. '15 min', '1 hour')",
-  "context_tag": "One word describing why it fits the context (e.g. 'energizing', 'relaxing', 'focused')"
+  "task_id": number,
+  "title": "string - simplified task title",
+  "reason": "string - why this task fits now",
+  "estimated": "string - time estimate format: 'X min' or 'X hour'",
+  "history": "string - reasons for skipping if any, otherwise empty",
+  "goal": "string - associated goal if relevant, otherwise empty", 
+  "context_tag": "string - single word context descriptor",
+  "next": "string - immediate first action to take"
 }`
 
 	return prompt
@@ -345,6 +383,9 @@ func promptUserAction(client *taskwarrior.Client, spotlightTask SpotlightResult)
 	switch strings.ToLower(response) {
 	case "y", "yes", "":
 		fmt.Println(theme.Success("Momentum: Task started!"))
+		client.StartTask(strconv.Itoa(spotlightTask.TaskID))
+		return nil
+
 	case "s", "snooze":
 		isTaskSkipped = true
 		fmt.Println(theme.Warn("Task snoozed. It'll be back."))
