@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix: Guide cmd does not assign goals to tasks that are generated
 - Fix: init.go may has no access to .taskrc global var
 
+## [0.2.7] - 2025-08-12
+
+- Removed CLA requirement and updated documentation accordingly
+- Fix: Remove unsupported temperature parameter for models newer than GPT-3.5 (thanks @rubdos)
+- Fix: Parse TaskWarrior Skipped field as float64 instead of int (thanks @rubdos)
+- Changed: Spot: Prompts now with [y]es (starting task)/[s]kip (skipping task)/[n]ext (adding +next tag) 
+
 ## [0.2.6] - 2025-08-11
 
 - Feature: Spot: Provide annotations and skipped count to the LLM promt for context

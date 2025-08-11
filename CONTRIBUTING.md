@@ -2,6 +2,6 @@
 
 Thank you for considering a contribution!
 
-By contributing to this project, you agree to the terms of the [Contributor License Agreement (CLA)](./CLA.md). Please read it carefully before submitting a pull request.
+By submitting code or other contributions to this project, you agree to license your contribution under the GNU Affero General Public License v3.0, the same license as this project.
 
-**If you do not agree to the CLA, do not submit code.**
+PRs and issues welcome. Open an enhancement issue or fork and create a pull request.

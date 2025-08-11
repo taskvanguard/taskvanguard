@@ -348,8 +348,6 @@ annotations:
 <!-- CONTRIBUTING -->
 ## Contributing
 
-By submitting code or other contributions to this project, you agree to the Contributor License Agreement (CLA). See [CLA.md](./CLA.md) for details.
-
 PRs and issues welcome. Open an enhancement issue or fork and create a pull request.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
