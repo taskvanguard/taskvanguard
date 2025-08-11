@@ -313,3 +313,15 @@ func (c *Client) GetPendingTasksWithArgsFiltered(cfg *types.Config, filterArgs [
 	}
 	return filter.FilterTasks(tasks, cfg), nil
 }
+
+func (c *Client) StartTask(taskId string) error {
+	cmd := exec.Command("task", taskId, "start")
+	
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		msg := "failed to start task " + taskId + ": " + err.Error() + "Output: " + string(output)
+		return errors.New(msg)
+	}
+	
+	return nil
+}

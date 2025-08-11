@@ -272,6 +272,24 @@ func massEditViaEditor(client taskwarrior.Client, taskList []types.Task, suggest
 		args := utils.TaskSuggestionToArgs(suggestion)
 		
 		if len(args) > 0 {
+			// Add original task as comment with project and tags
+			var comment strings.Builder
+			comment.WriteString("\n# Original: ")
+			comment.WriteString(strconv.Itoa(orig.ID))
+			comment.WriteString(" ")
+			comment.WriteString(orig.Description)
+
+			for _, tag := range orig.Tags {
+				comment.WriteString(" +")
+				comment.WriteString(tag)
+			}
+
+			if orig.Project != "" {
+				comment.WriteString(" project:")
+				comment.WriteString(orig.Project)
+			}
+			commands = append(commands, comment.String())
+			
 			cmdParts := []string{"task", "modify", strconv.Itoa(orig.ID)}
 			cmdParts = append(cmdParts, args...)
 			commands = append(commands, strings.Join(cmdParts, " "))
@@ -291,7 +309,7 @@ func massEditViaEditor(client taskwarrior.Client, taskList []types.Task, suggest
 	defer os.Remove(tempFile.Name())
 	
 	// Write commands to temp file with explanatory header
-	header := "#!/bin/bash\n# TaskVanguard Analysis Results - Mass Edit Mode\n#\n# The commands below will modify your TaskWarrior tasks based on AI analysis.\n# You can:\n# - Delete any lines you don't want to execute\n# - Modify the task modify commands as needed\n# - Add comments with # prefix\n# - All remaining commands will be executed when you save and exit\n#\n# Format: task modify <task_id> <modifications>\n\n"
+	header := "#!/bin/bash\n# - Delete any lines you don't want to execute\n# - Modify the task modify commands as needed\n# - All remaining commands will be executed when you save and exit\n#\n# Format: task modify <task_id> <modifications>\n"
 	content := header + strings.Join(commands, "\n") + "\n"
 	if _, err := tempFile.WriteString(content); err != nil {
 		tempFile.Close()
