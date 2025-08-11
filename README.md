@@ -32,12 +32,12 @@ Your tactical advisor at the frontlines of your goals - powered by AI using Task
   </p>
 
 <!-- <div align="center"> -->
-<!-- [![Contributors][contributors-shield]][contributors-url] -->
+[![Contributors][contributors-shield]][contributors-url]
 <!-- [![Forks][forks-shield]][forks-url] -->
 [![Go][Go-shield]][Go.dev]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-<!-- [![Task][license-shield]][license-url] -->
+[![Task][license-shield]][license-url]
 <!-- [![LinkedIn][linkedin-shield]][linkedin-url] -->
 <!-- </div> -->
 
