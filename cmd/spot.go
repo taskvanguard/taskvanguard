@@ -364,7 +364,7 @@ func promptUserAction(client *taskwarrior.Client, spotlightTask SpotlightResult)
 		task, err := client.GetTaskByID(strconv.Itoa(spotlightTask.TaskID))
 		if err == nil {
 			task.Skipped ++
-			arg := "skipped:" + strconv.Itoa(task.Skipped)
+			arg := "skipped:" + strconv.Itoa(int(task.Skipped))
 			client.ModifyTaskInTaskWarrior(spotlightTask.TaskID, []string{arg})
 		} else {
 			return err
