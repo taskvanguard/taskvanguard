@@ -314,6 +314,14 @@ Here are the top pending tasks sorted by urgency:
 		if len(task.Tags) > 0 {
 			prompt += fmt.Sprintf(" [Tags: %s]", strings.Join(task.Tags, ", "))
 		}
+		if len(task.Annotations) > 0 {
+			prompt += " [Annotations: "
+			for _, annotation := range task.Annotations {
+				prompt += annotation.Entry + ": "+ annotation.Description
+				prompt += ", "
+			}
+			prompt += "]"
+		}
 		prompt += fmt.Sprintf(" (Urgency: %.2f)\n", task.Urgency)
 	}
 

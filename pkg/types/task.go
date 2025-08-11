@@ -13,6 +13,12 @@ type Task struct {
 	Modified    TWTime    `json:"modified"`
 	Urgency     float64   `json:"urgency,omitempty"`
 	Skipped		int		  `json:"skipped"`
+	Annotations []Annotation `json:"annotations,omitempty"`
+}
+
+type Annotation struct {
+	Entry       string    `json:"entry"`
+	Description string    `json:"description"`
 }
 
 // type Goal struct {
