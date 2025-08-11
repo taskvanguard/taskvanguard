@@ -372,7 +372,7 @@ Required JSON format:
 
 func promptUserAction(client *taskwarrior.Client, spotlightTask SpotlightResult) error {
 
-	fmt.Printf("%s %s %s: ", theme.Title("→"), theme.Info("Do this task now?"), "[Y]es/[n]o/[s]nooze")
+	fmt.Printf("%s %s %s: ", theme.Title("→"), theme.Info("Do this task now?"), "[Y]es/[s]kip/[n]ext (tag +next)")
 
 	var response string
 	fmt.Scanln(&response)
@@ -382,14 +382,14 @@ func promptUserAction(client *taskwarrior.Client, spotlightTask SpotlightResult)
 
 	switch strings.ToLower(response) {
 	case "y", "yes", "":
-		fmt.Println(theme.Success("Momentum: Task started!"))
 		client.StartTask(strconv.Itoa(spotlightTask.TaskID))
+		fmt.Println(theme.Success("Momentum: Task started!"))
 		return nil
-
-	case "s", "snooze":
-		isTaskSkipped = true
-		fmt.Println(theme.Warn("Task snoozed. It'll be back."))
-	case "n", "no":
+	case "n", "next":
+		client.ModifyTaskInTaskWarrior(spotlightTask.TaskID, []string{"+next"})
+		fmt.Println(theme.Warn("Task marked with +next."))
+		return nil
+	case "s", "skip":
 		isTaskSkipped = true
 		fmt.Printf("%s %s %s", theme.Error("Blocked."), theme.Info("What's stopping you?"), "[quick note]: ")
 		reader := bufio.NewReader(os.Stdin)
