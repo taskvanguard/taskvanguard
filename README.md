@@ -91,19 +91,22 @@ Use `vanguard add <task>` just like `taskwarrior add <task>`. TaskVanguard creat
 
 ### 2. Install
 
+#### Arch Linux (AUR)
+```sh
+yay -S taskvanguard
+```
+
+#### From source
 ```sh
 go install github.com/taskvanguard/taskvanguard/cmd/vanguard@latest
 ```
 
-or
-
+#### Clone and build
 ```sh
 git clone https://github.com/taskvanguard/taskvanguard.git
 cd taskvanguard
 go build ./cmd/vanguard
 ```
-
-<!-- Or download the latest release from [Releases](https://github.com/taskvanguard/taskvanguard/releases). -->
 
 ### 3. Configure
 
@@ -185,7 +188,7 @@ By default the following annotations are added via LLM to the tasks you refactor
 
 ### Add
 
-Processes a task add command with an LLM to suggest better title, tags and annotations or splitting into subtasks.
+Processes a `task add` command with an LLM to suggest better title, tags and annotations or splitting into subtasks.
 
 - `--no-tags` disables LLM suggestioning tags. (config on/off)
 - `--no-subtasks` disables subtask splitting. (config on/off)
@@ -212,7 +215,7 @@ Analyzes either a specific task or a list of tasks and suggests improved task de
 
 Goals are primarily managed in the background. When you use `vanguard guide`, a goal is defined and a step-by-step roadmap is generated to help you achieve it. All related tasks are automatically linked to that goal. By associating tasks with goals, TaskVanguard can better understand the context in which each task exists-going beyond simple tagging (like +sb or +key). Goals are actually regular tasks within a special project (named goals by default, but customizable in your config).
 
-#### Goal Commands
+#### Goals Commands
 
 | Command                    | Description                                    |
 | -------------------------- | ---------------------------------------------- |
@@ -225,7 +228,7 @@ Goals are primarily managed in the background. When you use `vanguard guide`, a 
 | `vanguard goals unlink <id1> <id2>` | Remove task-goal link               |
 | `vanguard goals links <id>` | Show all tasks linked to a goal or goal linked to a task |
 
-#### Goal Usage
+#### Goals Usage
 
 ```bash
 # Create a new goal
@@ -245,7 +248,7 @@ vanguard goals links <task_id>
 vanguard goals modify <goal_id> "priority:H due:2024-12-31"
 ```
 
-#### Goal Features
+#### Goals Features
 
 - **TaskWarrior Integration**: Goals are stored as regular TaskWarrior tasks in a dedicated project
 - **Flexible Linking**: Link any task to any goal using the `goal` UDA (User Defined Attribute)
