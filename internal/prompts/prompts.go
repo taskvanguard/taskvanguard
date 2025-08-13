@@ -61,7 +61,6 @@ func RenderTemplate(filename string, data TemplateData) (string, error) {
 
 	tmpl := template.New("prompt").Funcs(funcMap)
 
-	// Load user_context.md template if it exists
 	userContextBytes, err := LoadPrompt("user_context.md")
 	if err == nil {
 		_, err = tmpl.New("user_context.md").Parse(string(userContextBytes))
