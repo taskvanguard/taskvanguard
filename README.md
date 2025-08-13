@@ -146,6 +146,7 @@ The following Tags are added by default:
 - `+cut` **Cut**: Task can save time or money in the future.
 - `+fast` **Fast**: Task can be finished quickly and requires minimal setup.
 - `+key` **Key**: High-impact task that directly drives one or more of your goals.
+- `+ai` **AI**: Can be mostly or completely done by AI
 
 
 **Annotations**
@@ -305,7 +306,7 @@ settings:
 llm:
     provider: openai
     api_key: "<YOUR_API_KEY_HERE>"
-    model: gpt-3.5-turbo
+    model: openai/gpt-4.1-mini
     base_url: https://openrouter.ai/api/v1
 filters:
     tag_filter_mode: "blacklist"
@@ -325,6 +326,9 @@ tags:
     sb:
         desc: Task is potentially snowballing positively or negatively and offers high roi
         urgency_factor: 1.3
+    ai:
+        desc: Task can potentially be done by ai mostly/completely
+        urgency_factor: 1.0
 annotations:
     short_reward:
         label: Short Reward

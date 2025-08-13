@@ -52,7 +52,7 @@ func CreateDefaultConfig(configPath string) (*types.Config, error) {
 		},
 		LLM: types.LLMConfig{
 			Provider: "openai",
-			Model:    "gpt-3.5-turbo",
+			Model:    "gpt-4.1-mini",
 			BaseURL:  "https://openrouter.ai/api/v1",
 			APIKey:   "<api key>",
 		},
@@ -78,6 +78,10 @@ func CreateDefaultConfig(configPath string) (*types.Config, error) {
 			"sb": {
 				Desc:          "Task is potentially snowballing positively or negatively and offers high roi",
 				UrgencyFactor: 1.3,
+			},
+			"ai": {
+				Desc:          "Task can potentially be done by ai mostly/completely",
+				UrgencyFactor: 1.0,
 			},
 		},
 		Annotations: map[string]types.AnnotationsMeta{
