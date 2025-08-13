@@ -7,11 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Feature: Add support for exporting tasks to workflow automation plattform (n8n) 
-- Feature: Add support for more LLM Apis
-- Feature: Add support for system notifications
-- Fix: Guide cmd does not assign goals to tasks that are generated
-- Fix: init.go may has no access to .taskrc global var
+- Fix: Add universal method for cleaning up LLM respones
+- Change: Switch default model to gpt4.1-mini because its much better suited
+- Feature: Add +ai tag for evaluation of tasks that can be done via LLM
 
 ## [0.2.7] - 2025-08-12
 
