@@ -189,7 +189,7 @@ func (c *Client) GetTags() (map[string]int, error) {
 }
 
 func (c *Client) GetGoals() ([]types.Task, error) {
-	cmd := exec.Command("task", "project:goals", "export")
+	cmd := exec.Command("task", "project:goals", "status.not:deleted", "export")
 	output, err := cmd.Output()
 	if err != nil {
 		return nil, err
