@@ -17,7 +17,7 @@ Your role is to rewrite a single given task to make it more actionable, concise,
 
 Use goals, existing tags, or other tasks only to inform the addition of metadata such as:
 
-strategic tags: +key, +cut, +sb, +fast
+strategic tags: +key, +cut, +sb, +fast, +ai
 
 project assignment (if clearly implied)
 

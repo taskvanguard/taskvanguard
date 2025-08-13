@@ -373,7 +373,7 @@ func createRoadmapPrompt(cfg *types.Config, guideResult *GuideResponse) (string,
 	}
 	userTagsStr := strings.Join(userTags, ", ")
 	if userTagsStr == "" {
-		userTagsStr = "key, sb, fast, cut (use appropriate tags based on task characteristics)"
+		userTagsStr = "key, sb, fast, cut, ai (use appropriate tags based on task characteristics)"
 	}
 
 	template, err := prompts.LoadPrompt("guide_roadmap.md")

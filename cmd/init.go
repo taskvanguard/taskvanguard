@@ -181,7 +181,7 @@ func setupConfiguration(configPath string) {
 
 	provider := "openai"
 	apiKey := "YOUR_API_KEY_HERE"
-	model := "gpt-3.5-turbo"
+	model := "gpt-4.1-mini"
 	fmt.Println("")
 
 	// cfg := &types.Config{
@@ -289,6 +289,7 @@ func setupTagManagement() {
 		theme.Info("+cut: ") + "saves time/money", 
 		theme.Info("+fast: ") + "quick task (less than 15 min)", 
 		theme.Info("+key: ") + "high impact (aligns with goals/high value)",
+		theme.Info("+ai: ") + "AI can do most/all of the work",
 	}
 	for _, tag := range commonTags {
 		fmt.Printf("  %s\n", theme.Success(tag))
@@ -355,7 +356,7 @@ func setupGoalTracking(twConfigPath string) {
 // 	case "deepseek":
 // 		return "deepseek-chat"
 // 	default:
-// 		return "gpt-3.5-turbo"
+// 		return "gpt-4.1-mini"
 // 	}
 // }
 
