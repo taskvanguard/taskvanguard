@@ -213,7 +213,7 @@ func askOrLoadContextFromState(stateManager *state.StateManager, moodFlag string
 	}
 
 	// fmt.Print("Where are you right now? ([h]ome/[o]ffice/[t]ravel/[]other): ")
-	fmt.Printf("%s %s %s: ", theme.Title("→"), theme.Info("Current Location?"), "[h]ome [o]ffice [t]ravel other: ")
+	fmt.Printf("%s %s %s: ", theme.Title("→"), theme.Info("Current Location?"), "[h]ome [o]ffice [t]ravel other")
 	var location string
 	fmt.Scanln(&location)
 	switch location {
