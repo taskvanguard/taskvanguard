@@ -14,6 +14,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/taskvanguard/taskvanguard/internal/goals"
 	"github.com/taskvanguard/taskvanguard/internal/llm"
+	"github.com/taskvanguard/taskvanguard/internal/state"
 	"github.com/taskvanguard/taskvanguard/internal/taskwarrior"
 	"github.com/taskvanguard/taskvanguard/pkg/theme"
 	"github.com/taskvanguard/taskvanguard/pkg/types"
@@ -30,11 +31,6 @@ type SpotlightResult struct {
 	Next 	   string `json:"next"`
 }
 
-type TaskContext struct {
-	Mood      string    `json:"mood"`
-	Location  string    `json:"location"`
-	Timestamp time.Time `json:"timestamp"`
-}
 
 var spotCmd = &cobra.Command{
 	Use:   "spot",
@@ -71,7 +67,12 @@ func runSpot(cmd *cobra.Command, args []string) {
 }
 
 func runPassiveSpotlight(client *taskwarrior.Client, cfg *types.Config, moodFlag string, contextFlag string, refresh bool, filterArgs []string) {
-	taskContext := loadContextFromEnv(moodFlag, contextFlag, refresh)
+	stateManager, err := state.NewStateManager()
+	if err != nil {
+		fmt.Println(theme.Error(err.Error()))
+		return
+	}
+	taskContext := loadContextFromState(stateManager, moodFlag, contextFlag, refresh)
 	
 	s := spinner.New(spinner.CharSets[40], 100*time.Millisecond) 
 	s.Prefix = "Working... "
@@ -89,7 +90,12 @@ func runPassiveSpotlight(client *taskwarrior.Client, cfg *types.Config, moodFlag
 }
 
 func runInteractiveSpotlight(client *taskwarrior.Client, cfg *types.Config, moodFlag string, contextFlag string, refresh bool, filterArgs []string) {
-	taskContext := askOrLoadContextFromEnv(moodFlag, contextFlag, refresh)
+	stateManager, err := state.NewStateManager()
+	if err != nil {
+		fmt.Println(theme.Error(err.Error()))
+		return
+	}
+	taskContext := askOrLoadContextFromState(stateManager, moodFlag, contextFlag, refresh)
 
 	s := spinner.New(spinner.CharSets[40], 100*time.Millisecond) 
 	s.Prefix = "Working... "
@@ -107,7 +113,7 @@ func runInteractiveSpotlight(client *taskwarrior.Client, cfg *types.Config, mood
 	promptUserAction(client, task)
 }
 
-func pickSpotlightTask(client *taskwarrior.Client, cfg *types.Config, taskContext TaskContext, filterArgs []string) (SpotlightResult, error) {
+func pickSpotlightTask(client *taskwarrior.Client, cfg *types.Config, taskContext state.TaskContext, filterArgs []string) (SpotlightResult, error) {
 
 	var tasks []types.Task
 	var err error
@@ -197,15 +203,17 @@ func displaySpotlight(t SpotlightResult, silent bool) {
 	}
 }
 
-func askOrLoadContextFromEnv(moodFlag string, contextFlag string, refresh bool) TaskContext {
+func askOrLoadContextFromState(stateManager *state.StateManager, moodFlag string, contextFlag string, refresh bool) state.TaskContext {
 	if !refresh {
-		if taskContext := loadContextFromEnv("", "", false); taskContext.Mood != "neutral" || taskContext.Location != "unknown" {
-			return taskContext
+		if isFresh, _ := stateManager.IsContextFresh(); isFresh {
+			if taskContext, err := stateManager.LoadContext(); err == nil {
+				return taskContext
+			}
 		}
 	}
 
 	// fmt.Print("Where are you right now? ([h]ome/[o]ffice/[t]ravel/[]other): ")
-	fmt.Printf("%s %s %s: ", theme.Title("→"), theme.Info("Current Location?"), "[h]ome [o]ffice [t]ravel other ")
+	fmt.Printf("%s %s %s: ", theme.Title("→"), theme.Info("Current Location?"), "[h]ome [o]ffice [t]ravel other: ")
 	var location string
 	fmt.Scanln(&location)
 	switch location {
@@ -226,7 +234,7 @@ func askOrLoadContextFromEnv(moodFlag string, contextFlag string, refresh bool) 
 	}
 
 	// fmt.Print("How are you feeling? ([e]nergetic/[f]ocused/[t]ired/[s]tressed/[n]eutral): ")
-	fmt.Printf("%s %s %s: ", theme.Title("→"), theme.Info("Current energy?"), "[e]nergetic [f]ocused [t]ired [s]tressed [n]eutral ")
+	fmt.Printf("%s %s %s: ", theme.Title("→"), theme.Info("Current energy?"), "[e]nergetic [f]ocused [t]ired [s]tressed [N]eutral ")
 	var mood string
 	fmt.Scanln(&mood)
 	switch mood {
@@ -249,65 +257,36 @@ func askOrLoadContextFromEnv(moodFlag string, contextFlag string, refresh bool) 
 
 	}
 
-	taskContext := TaskContext{
+	taskContext := state.TaskContext{
 		Mood:      mood,
 		Location:  location,
 		Timestamp: time.Now(),
 	}
 
-	saveContextToEnv(taskContext)
+	stateManager.SaveContext(taskContext)
 	return taskContext
 }
 
-func saveContextToEnv(taskContext TaskContext) {
-	os.Setenv("TASKVANGUARD_MOOD", taskContext.Mood)
-	os.Setenv("TASKVANGUARD_LOCATION", taskContext.Location)
-	os.Setenv("TASKVANGUARD_TIME", taskContext.Timestamp.Format(time.RFC3339))
-}
 
-func loadContextFromEnv(moodFlag, contextFlag string, refresh bool) TaskContext {
-	var mood, location string
-	var timestamp time.Time
+func loadContextFromState(stateManager *state.StateManager, moodFlag, contextFlag string, refresh bool) state.TaskContext {
+	context, _ := stateManager.LoadContext()
 
 	if moodFlag != "" {
-		mood = moodFlag
-	} else if !refresh {
-		mood = os.Getenv("TASKVANGUARD_MOOD")
+		context.Mood = moodFlag
 	}
-	if mood == "" {
-		mood = "neutral"
-	}
-
 	if contextFlag != "" {
-		location = contextFlag
-	} else if !refresh {
-		location = os.Getenv("TASKVANGUARD_LOCATION")
+		context.Location = contextFlag
 	}
-	if location == "" {
-		location = "unknown"
-	}
-
-	if !refresh {
-		if timeStr := os.Getenv("TASKVANGUARD_TIME"); timeStr != "" {
-			if parsedTime, err := time.Parse(time.RFC3339, timeStr); err == nil {
-				if time.Since(parsedTime) < 4*time.Hour {
-					timestamp = parsedTime
-				}
-			}
-		}
-	}
-	if timestamp.IsZero() {
-		timestamp = time.Now()
+	if refresh {
+		context.Mood = "neutral"
+		context.Location = "unknown"
+		context.Timestamp = time.Now()
 	}
 
-	return TaskContext{
-		Mood:      mood,
-		Location:  location,
-		Timestamp: timestamp,
-	}
+	return context
 }
 
-func createSpotlightPrompt(taskContext TaskContext, tasks []types.Task, cfg *types.Config) string {
+func createSpotlightPrompt(taskContext state.TaskContext, tasks []types.Task, cfg *types.Config) string {
 	// Create enhanced tasks with goal descriptions for LLM
 	type TaskForLLM struct {
 		types.Task
