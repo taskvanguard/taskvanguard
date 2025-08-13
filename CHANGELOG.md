@@ -7,11 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- nothing
+
+## [0.2.8] - 2025-08-13
+
 - Fix: Add universal method for cleaning up LLM respones
 - Change: Switch default model to gpt4.1-mini because its much better suited
 - Feature: Add +ai tag for evaluation of tasks that can be done via LLM
 - Fix: Spot: not remembering mood and context
-- Feature: Add config param for determining how long context:mood/location is valid
+- Feature: Add config param for determining how long context:mood/location is valid (60 mins by default)
 
 ## [0.2.7] - 2025-08-12
 
