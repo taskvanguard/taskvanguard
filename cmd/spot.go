@@ -315,7 +315,7 @@ func createSpotlightPrompt(taskContext state.TaskContext, tasks []types.Task, cf
 		tasksJSON = []byte("[]")
 	}
 
-	prompt := fmt.Sprintf(`You are a productivity expert helping someone choose the best task to work on right now.
+	prompt := fmt.Sprintf(`You are a productivity expert helping me to choose the best task to work on right now.
 
 Context:
 - Current mood: %s
