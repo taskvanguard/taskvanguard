@@ -67,7 +67,7 @@ func runSpot(cmd *cobra.Command, args []string) {
 }
 
 func runPassiveSpotlight(client *taskwarrior.Client, cfg *types.Config, moodFlag string, contextFlag string, refresh bool, filterArgs []string) {
-	stateManager, err := state.NewStateManager()
+	stateManager, err := state.NewStateManager(cfg)
 	if err != nil {
 		fmt.Println(theme.Error(err.Error()))
 		return
@@ -90,7 +90,7 @@ func runPassiveSpotlight(client *taskwarrior.Client, cfg *types.Config, moodFlag
 }
 
 func runInteractiveSpotlight(client *taskwarrior.Client, cfg *types.Config, moodFlag string, contextFlag string, refresh bool, filterArgs []string) {
-	stateManager, err := state.NewStateManager()
+	stateManager, err := state.NewStateManager(cfg)
 	if err != nil {
 		fmt.Println(theme.Error(err.Error()))
 		return

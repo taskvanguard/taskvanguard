@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/taskvanguard/taskvanguard/pkg/types"
 )
 
 type TaskContext struct {
@@ -15,9 +17,10 @@ type TaskContext struct {
 
 type StateManager struct {
 	statePath string
+	ttlMinutes int
 }
 
-func NewStateManager() (*StateManager, error) {
+func NewStateManager(config *types.Config) (*StateManager, error) {
 	configDir, err := os.UserConfigDir()
 	if err != nil {
 		return nil, err
@@ -29,8 +32,14 @@ func NewStateManager() (*StateManager, error) {
 		return nil, err
 	}
 	
+	ttlMinutes := config.Settings.ContextTTLMinutes
+	if ttlMinutes <= 0 {
+		ttlMinutes = 60 // default fallback
+	}
+	
 	return &StateManager{
 		statePath: statePath,
+		ttlMinutes: ttlMinutes,
 	}, nil
 }
 
@@ -64,7 +73,7 @@ func (sm *StateManager) LoadContext() (TaskContext, error) {
 		return context, err
 	}
 	
-	if time.Since(savedContext.Timestamp) > 4*time.Hour {
+	if time.Since(savedContext.Timestamp) > time.Duration(sm.ttlMinutes)*time.Minute {
 		return TaskContext{
 			Mood:      "neutral",
 			Location:  "unknown", 

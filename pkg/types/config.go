@@ -41,6 +41,7 @@ type Settings struct {
 	TaskImportLimit 		int	   `yaml:"task_import_limit"`
     TaskProcessingBatchSize int	   `yaml:"task_processing_batch_size"`
     GuidingQuestionAmount   int    `yaml:"guiding_question_amount"`
+    ContextTTLMinutes       int    `yaml:"context_ttl_minutes"`
 }
 
 type AnnotationsMeta struct {

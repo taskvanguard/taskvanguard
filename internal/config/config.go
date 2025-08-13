@@ -49,6 +49,7 @@ func CreateDefaultConfig(configPath string) (*types.Config, error) {
 			TaskImportLimit: 500,
 			TaskProcessingBatchSize: 15,
 			GuidingQuestionAmount: 6,
+			ContextTTLMinutes: 60,
 		},
 		LLM: types.LLMConfig{
 			Provider: "openai",
