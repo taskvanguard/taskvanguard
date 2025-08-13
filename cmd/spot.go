@@ -213,11 +213,11 @@ func askOrLoadContextFromEnv(moodFlag string, contextFlag string, refresh bool) 
 		location = "home"
 	case "o", "office":
 		location = "office"
-	case "t", "tired":
+	case "t", "travel":
 		location = "travel"
 	default:
-		if moodFlag != "" {
-			location = moodFlag			
+		if contextFlag != "" {
+			location = contextFlag
 			fmt.Printf(theme.Warn("Context set via --context : `%s`\n"), location)
 		} else {
 			location = "unknown"
@@ -239,8 +239,8 @@ func askOrLoadContextFromEnv(moodFlag string, contextFlag string, refresh bool) 
 	case "s", "stressed":
 		mood = "stressed"
 	default:
-		if contextFlag != "" {
-			mood = contextFlag			
+		if moodFlag != "" {
+			mood = moodFlag			
 			fmt.Printf(theme.Warn("Mood set via --mood `%s`\n"), mood)
 		} else {
 			mood = "neutral"
