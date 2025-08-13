@@ -3,6 +3,7 @@ package llm
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/taskvanguard/taskvanguard/pkg/types"
 	"github.com/tmc/langchaingo/llms"
@@ -85,4 +86,27 @@ func (c *Client) Chat(messages []Message) (string, error) {
 	}
 
 	return completion.Choices[0].Content, nil
+}
+
+// CleanResponse removes markdown code blocks from LLM responses
+func CleanResponse(response string) string {
+	cleanResponse := strings.TrimSpace(response)
+	
+	// Remove opening code block markers
+	if strings.HasPrefix(cleanResponse, "```json") {
+		cleanResponse = strings.TrimPrefix(cleanResponse, "```json")
+	} else if strings.HasPrefix(cleanResponse, "```Json") {
+		cleanResponse = strings.TrimPrefix(cleanResponse, "```Json")
+	} else if strings.HasPrefix(cleanResponse, "```JSON") {
+		cleanResponse = strings.TrimPrefix(cleanResponse, "```JSON")
+	} else if strings.HasPrefix(cleanResponse, "```") {
+		cleanResponse = strings.TrimPrefix(cleanResponse, "```")
+	}
+	
+	// Remove closing code block marker
+	if strings.HasSuffix(cleanResponse, "```") {
+		cleanResponse = strings.TrimSuffix(cleanResponse, "```")
+	}
+	
+	return strings.TrimSpace(cleanResponse)
 }

@@ -163,8 +163,10 @@ func pickSpotlightTask(client *taskwarrior.Client, cfg *types.Config, taskContex
 		return SpotlightResult{}, fmt.Errorf("llm chat error: %w", err)
 	}
 
+	cleanResponse := llm.CleanResponse(response)
+
 	var result SpotlightResult
-	if err := json.Unmarshal([]byte(response), &result); err != nil {
+	if err := json.Unmarshal([]byte(cleanResponse), &result); err != nil {
 		return SpotlightResult{}, fmt.Errorf("unmarshall llm response: %w", err)
 	}
 
