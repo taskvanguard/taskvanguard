@@ -194,7 +194,7 @@ Processes a task add command with an LLM to suggest better title, tags and annot
 
 ### Spot
 
-Takes into account mood and context. You can use `--no-prompt` and use it for system notifications. If you type in a mood and context it will remember that for 4 hours.
+Takes into account mood and context. You can use `--no-prompt` and use it for system notifications. If you type in a mood and context it will remember that for a configurable duration (default: 1 hour).
 
 - `--no-prompt` skips questions about context and mood 
 - `--mood <mood>` provide the mood you are in (for example energetic)
@@ -285,6 +285,7 @@ alias tvga="vanguard add"  # for completions
 - `goal_project_name`: Name of your goals project.
 - `task_processing_batch_size`: Number of tasks processed at once (default: 15).
 - `task_import_limit`: Max tasks to import for analysis (default: 999).
+- `context_ttl_minutes`: Duration in minutes that mood/location context is remembered (default: 60).
 
 ```yaml
 settings:
@@ -300,6 +301,7 @@ settings:
     goal_project_name: "goals"
     task_import_limit: 999
     task_processing_batch_size: 15
+    context_ttl_minutes: 60
 llm:
     provider: openai
     api_key: "<YOUR_API_KEY_HERE>"
