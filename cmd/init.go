@@ -208,8 +208,10 @@ func setupConfiguration(configPath string) {
 	// 	return
 	// }
 
-	fmt.Println(theme.Warn("Go here and put your API Credentials in:"))
+	fmt.Println(theme.Warn("Go here and put your API credentials in:"))
 	fmt.Println(theme.Info(configPath))
+	fmt.Println(theme.Warn("Or set env var instead:"))
+	fmt.Println(theme.Info("TASKVANGUARD_API_KEY"))
 
 	fmt.Println("")
 	fmt.Println("Press Enter to continue...")

@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/taskvanguard/taskvanguard/pkg/types"
 	"gopkg.in/yaml.v3"
@@ -22,7 +23,12 @@ func Load() (*types.Config, error) {
 	}
 	
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		return CreateDefaultConfig(configPath)
+		cfg, err := CreateDefaultConfig(configPath)
+		if err != nil {
+			return nil, err
+		}
+		applyEnvOverrides(cfg)
+		return cfg, nil
 	}
 
 	data, err := os.ReadFile(configPath)
@@ -35,7 +41,49 @@ func Load() (*types.Config, error) {
 		return nil, err
 	}
 
+	applyEnvOverrides(&config)
+
 	return &config, nil
+}
+
+func applyEnvOverrides(cfg *types.Config) {
+	if cfg == nil {
+		return
+	}
+
+	if !needsAPIKeyFallback(cfg.LLM.APIKey) {
+		return
+	}
+
+	if apiKey := strings.TrimSpace(os.Getenv("TASKVANGUARD_API_KEY")); apiKey != "" {
+		cfg.LLM.APIKey = apiKey
+		return
+	}
+
+	if strings.EqualFold(cfg.LLM.Provider, "deepseek") {
+		if apiKey := strings.TrimSpace(os.Getenv("DEEPSEEK_API_KEY")); apiKey != "" {
+			cfg.LLM.APIKey = apiKey
+			return
+		}
+	}
+
+	if apiKey := strings.TrimSpace(os.Getenv("OPENAI_API_KEY")); apiKey != "" {
+		cfg.LLM.APIKey = apiKey
+	}
+}
+
+func needsAPIKeyFallback(apiKey string) bool {
+	key := strings.TrimSpace(apiKey)
+	if key == "" {
+		return true
+	}
+
+	switch strings.ToLower(key) {
+	case "<api key>", "<your_api_key_here>", "your_api_key_here":
+		return true
+	default:
+		return false
+	}
 }
 
 func CreateDefaultConfig(configPath string) (*types.Config, error) {

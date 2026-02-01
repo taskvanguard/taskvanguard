@@ -290,6 +290,11 @@ alias tvga="vanguard add"  # for completions
 - `task_import_limit`: Max tasks to import for analysis (default: 999).
 - `context_ttl_minutes`: Duration in minutes that mood/location context is remembered (default: 60).
 
+Environment variable API key fallback (used only when `llm.api_key` is empty or still a placeholder):
+- `TASKVANGUARD_API_KEY`: first fallback.
+- `DEEPSEEK_API_KEY`: next fallback when `llm.provider` is `deepseek`.
+- `OPENAI_API_KEY`: final fallback for OpenAI-compatible providers.
+
 ```yaml
 settings:
     debug: false
@@ -400,6 +405,4 @@ Project Link: [https://github.com/taskvanguard/taskvanguard](https://github.com/
 
 [Go.dev]: https://go.dev/
 [Go-shield]: https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white
-
-
 
