@@ -15,11 +15,9 @@
     <img src="docs/images/logo.png" alt="Logo" width="200" height="200">
   </a>
 
-<h3 align="center">Task Vanguard [BETA 0.2.8]</h3>
+<h3 align="center">Task Vanguard</h3>
 
-  <p align="center">
-Your tactical advisor at the frontlines of your goals - powered by AI using TaskWarrior.
-    <br>
+<p align="center">
 
 **TaskVanguard** is a lightweight, fast, highly configurable CLI wrapper for [TaskWarrior](https://taskwarrior.org/), written in Go. It brings AI-powered suggestions, smart tagging, goal management and cognitive support using any OpenAI-compatible LLM API.
 
@@ -57,14 +55,14 @@ Use `vanguard add <task>` just like `taskwarrior add <task>`. TaskVanguard creat
 
 ### Features
 
-✨ **Add:** AI-Enhanced Task Creation: Improves task titles, tags, project and annotations for clarity and relevance.<br>
+✨ **Add:** AI-Enhanced Task Creation: Improves task titles, tags, project and annotations.<br>
 🎯 **Spot:** Do the Right Thing Next: Identifies the most impactful next task. Based on urgency, context, mood etc.<br>
-🧭 **Guidance:** Generate concrete, step-by-step roadmaps to achieve goals using LLM-backed planning.<br>
-⛰️ **Goal Management:** Link tasks to long-term objectives and maintain alignment with your broader mission.<br>
-📦 **Batch Analysis:** Refactor, annotate entire task backlogs by tags or projects at once.<br>
+🧭 **Guidance:** Generate concrete, step-by-step roadmaps to achieve goals.<br>
+⛰️ **Goal Management:** Link tasks to long-term objectives.<br>
+📦 **Batch Analysis:** Refactor, annotate task backlogs by tags or projects.<br>
 🗡️ **Subtask Splitting:** Suggests splitting up vague tasks and suggests clear, actionable subtasks.
 
-**Tip:** You can stop certain tasks from being sent to the LLM by blacklisting tags or projects.   
+**Tip:** You can stop certain tasks from being sent to the API by blacklisting tags or projects.   
 
 
 ## Why TaskVanguard?
@@ -151,7 +149,7 @@ The following Tags are added by default:
 
 **Annotations**
 
-By default the following annotations are added via LLM to the tasks you refactor with TaskVanguard:
+By default the following annotations are added to the tasks you refactor with TaskVanguard:
 
 - `short_reward:` immediate benefit
 - `long_reward:` strategic benefit
@@ -171,8 +169,8 @@ By default the following annotations are added via LLM to the tasks you refactor
 | Command            | Description                                     |
 | ------------------ | ----------------------------------------------- |
 | `vanguard init`    | Configure API, shell aliases, default settings  |
-| `vanguard add`     | Creates tasks with AI-augmented improvements                      |
-| `vanguard analyze` | Provides LLM-driven review, tags, and refactoring |
+| `vanguard add`     | Creates tasks with AI-augmented improvements    |
+| `vanguard analyze` | Provides review, tags, and refactoring          |
 | `vanguard spot`    | Surfaces the single best task to do next        |
 | `vanguard goals`   | Manage goals and link tasks to achieve them     |
 
@@ -356,15 +354,11 @@ annotations:
 
 ```
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 <!-- CONTRIBUTING -->
 ## Contributing
 
 PRs and issues welcome. Open an enhancement issue or fork and create a pull request.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 <!-- LICENSE -->
@@ -372,8 +366,6 @@ PRs and issues welcome. Open an enhancement issue or fork and create a pull requ
 
 This project is licensed under the GNU Affero General Public License v3.0.
 See `LICENSE.txt`.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
